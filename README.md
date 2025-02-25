@@ -10,17 +10,6 @@ True or False
 > USING_MIPOS = True \
 > USING_KCUBE = True
 
-**DRV MODE:**
-
-- NIDAQ -> analog IO
-- MIPOS -> comport
-
-> MIPOS_DRV_MODE = "NIDAQ"
-
-**MIPOS controller comport address**
-
-> MIPOS_PORT = COM1
-
 **NIDAQ board device and ports**
 
 > NIDAQ_DEVICE = Dev2 \
