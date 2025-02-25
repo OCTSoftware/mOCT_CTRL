@@ -1,0 +1,101 @@
+{
+ "version": "auto-py-to-exe-configuration_v1",
+ "pyinstallerOptions": [
+  {
+   "optionDest": "noconfirm",
+   "value": true
+  },
+  {
+   "optionDest": "filenames",
+   "value": "C:/mOCT/mOCT_CTRL/main.py"
+  },
+  {
+   "optionDest": "onefile",
+   "value": false
+  },
+  {
+   "optionDest": "console",
+   "value": true
+  },
+  {
+   "optionDest": "clean_build",
+   "value": false
+  },
+  {
+   "optionDest": "strip",
+   "value": false
+  },
+  {
+   "optionDest": "noupx",
+   "value": false
+  },
+  {
+   "optionDest": "hide_console",
+   "value": "minimize-early"
+  },
+  {
+   "optionDest": "disable_windowed_traceback",
+   "value": false
+  },
+  {
+   "optionDest": "uac_admin",
+   "value": false
+  },
+  {
+   "optionDest": "uac_uiaccess",
+   "value": false
+  },
+  {
+   "optionDest": "argv_emulation",
+   "value": false
+  },
+  {
+   "optionDest": "bootloader_ignore_signals",
+   "value": false
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/OCT/AppData/Roaming/Python/Python312/site-packages/customtkinter;customtkinter/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/OCT/AppData/Roaming/Python/Python312/site-packages/nidaqmx;nidaqmx/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/OCT/AppData/Roaming/Python/Python312/site-packages/numpy;numpy/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/OCT/AppData/Roaming/Python/Python312/site-packages/pythonnet;pythonnet/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/Users/OCT/AppData/Roaming/Python/Python312/site-packages/serial;serial/"
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/mOCT/mOCT_CTRL/AutoPYToExe.json;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/mOCT/mOCT_CTRL/GUI.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/mOCT/mOCT_CTRL/README.md;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/mOCT/mOCT_CTRL/requirements.txt;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/mOCT/mOCT_CTRL/_internal/config.txt;."
+  }
+ ],
+ "nonPyinstallerOptions": {
+  "increaseRecursionLimit": true,
+  "manualArguments": "--copy-metadata nidaqmx"
+ }
+}

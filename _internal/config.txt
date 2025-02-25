@@ -1,0 +1,31 @@
+# Select devices
+using_kcube   = True
+using_nidaq   = False
+using_gui_control = True    # ALWAYS TRUE !!!
+
+
+########################## MIPOS #########################
+
+# -> NIDAQ board device and ports
+nidaq_device  = Dev1
+nidaq_ao_port = ao0
+nidaq_ai_port = ai0
+
+######################### KCUBE #########################
+
+# Thorlabs KCube serial number
+
+kcube_serial_number = 28250442
+
+# StepSize
+kcube_stepsize = 0.5
+
+# Slider position for dedicated microscope objective lenses
+05x16 = 10.0
+10x03 = 7.35
+20x05 = 30.0
+40x08 = 40.0
+free  = 50.0
+
+last_selected = 10x03
+
