@@ -7,7 +7,7 @@
   },
   {
    "optionDest": "filenames",
-   "value": "C:/mOCT/mOCT_CTRL/main.py"
+   "value": "C:/mOCT/mOCT_CTRL/mOCT_CTRL.py"
   },
   {
    "optionDest": "onefile",
@@ -15,7 +15,11 @@
   },
   {
    "optionDest": "console",
-   "value": true
+   "value": false
+  },
+  {
+   "optionDest": "icon_file",
+   "value": "C:/mOCT/mOCT_CTRL/_internal/logo.ico"
   },
   {
    "optionDest": "clean_build",
@@ -28,10 +32,6 @@
   {
    "optionDest": "noupx",
    "value": false
-  },
-  {
-   "optionDest": "hide_console",
-   "value": "minimize-early"
   },
   {
    "optionDest": "disable_windowed_traceback",
@@ -55,23 +55,23 @@
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/OCT/AppData/Roaming/Python/Python312/site-packages/customtkinter;customtkinter/"
+   "value": "C:/Users/Anatomie-OCT/AppData/Roaming/Python/Python312/site-packages/customtkinter;customtkinter/"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/OCT/AppData/Roaming/Python/Python312/site-packages/nidaqmx;nidaqmx/"
+   "value": "C:/Users/Anatomie-OCT/AppData/Roaming/Python/Python312/site-packages/nidaqmx;nidaqmx/"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/OCT/AppData/Roaming/Python/Python312/site-packages/numpy;numpy/"
+   "value": "C:/Users/Anatomie-OCT/AppData/Roaming/Python/Python312/site-packages/numpy;numpy/"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/OCT/AppData/Roaming/Python/Python312/site-packages/pythonnet;pythonnet/"
+   "value": "C:/Users/Anatomie-OCT/AppData/Roaming/Python/Python312/site-packages/pythonnet;pythonnet/"
   },
   {
    "optionDest": "datas",
-   "value": "C:/Users/OCT/AppData/Roaming/Python/Python312/site-packages/serial;serial/"
+   "value": "C:/Users/Anatomie-OCT/AppData/Roaming/Python/Python312/site-packages/serial;serial/"
   },
   {
    "optionDest": "datas",
@@ -92,6 +92,22 @@
   {
    "optionDest": "datas",
    "value": "C:/mOCT/mOCT_CTRL/_internal/config.txt;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/mOCT/mOCT_CTRL/_internal/focus.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/mOCT/mOCT_CTRL/_internal/logo.ico;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/mOCT/mOCT_CTRL/_internal/logo.png;."
+  },
+  {
+   "optionDest": "datas",
+   "value": "C:/mOCT/mOCT_CTRL/_internal/zref.png;."
   }
  ],
  "nonPyinstallerOptions": {

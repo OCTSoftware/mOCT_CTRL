@@ -7,6 +7,8 @@ Created on Feb 20, 2025 by Martin Ahrens
 m.ahrens@uni-luebeck.de
 """
 
+from version import __version__
+from PIL import Image, ImageTk
 from pathlib import Path
 import customtkinter as ctk
 
@@ -30,7 +32,7 @@ class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("mOCT CTRL / 2025-Q1")
+        self.title("mOCT CTRL / " + __version__)
         self.grid_columnconfigure(0, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
@@ -59,8 +61,16 @@ class App(ctk.CTk):
             self.nidaq_f0 = ctk.CTkFrame(self, fg_color="transparent")
             self.nidaq_f0.grid(row=0, column=0, padx=(5, 2.5), pady=(5, 5), sticky="nw")
 
-            self.nidaq_lb = ctk.CTkLabel(self.nidaq_f0, width=80, height=20, font=("Cosmic Sans MS", 18, "normal"), text="MIPOS")
+            self.nidaq_f01 = ctk.CTkFrame(self.nidaq_f0, fg_color="transparent")
+            self.nidaq_f01.grid(row=0, column=0, padx=(5, 2.5), pady=(5, 5), sticky="nw")
+
+            self.nidaq_lb = ctk.CTkLabel(self.nidaq_f01, width=80, height=20, font=("Cosmic Sans MS", 18, "normal"), text="MIPOS")
             self.nidaq_lb.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
+
+            image = Image.open("_internal/focus.png")
+            ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(40, 40))
+            self.label = ctk.CTkLabel(self.nidaq_f01, image=ctk_image, text="")
+            self.label.grid(row=0, column=1, padx=(0, 0), pady=(0, 0))
 
             self.nidaq_f1 = ctk.CTkFrame(self.nidaq_f0)
             self.nidaq_f1.grid(row=1, column=0, padx=(5, 5), pady=(5, 5))
@@ -86,7 +96,7 @@ class App(ctk.CTk):
             self.nidaq_lb = ctk.CTkLabel(self.nidaq_f3, width=80, height=20, text="0.0")
             self.nidaq_lb.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
 
-            self.nidaq_tf = ctk.CTkEntry(self.nidaq_f3, width=80, height=20)
+            self.nidaq_tf = ctk.CTkEntry(self.nidaq_f3, width=80, height=20, placeholder_text=0.0)
             self.nidaq_tf.grid(row=1, column=0, padx=(5, 5), pady=(5, 5))
 
             self.nidaq_bt_go = ctk.CTkButton(self.nidaq_f3, width=80, height=20, text="Go", command=self.nidaq_go)
@@ -110,8 +120,16 @@ class App(ctk.CTk):
             self.kcube_f0 = ctk.CTkFrame(self, fg_color="transparent")
             self.kcube_f0.grid(row=0, column=1, padx=(2.5, 5), pady=(5, 5), sticky="nw")
 
-            self.kcube_lb = ctk.CTkLabel(self.kcube_f0, width=80, height=20, font=("Cosmic Sans MS", 18, "normal"), text="KINESIS")
+            self.kcube_f01 = ctk.CTkFrame(self.kcube_f0, fg_color="transparent")
+            self.kcube_f01.grid(row=0, column=0, padx=(5, 2.5), pady=(5, 5), sticky="nw")
+
+            self.kcube_lb = ctk.CTkLabel(self.kcube_f01, width=80, height=20, font=("Cosmic Sans MS", 18, "normal"), text="KINESIS")
             self.kcube_lb.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
+
+            image = Image.open("_internal/zref.png")
+            ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(40, 40))
+            self.label = ctk.CTkLabel(self.kcube_f01, image=ctk_image, text="")
+            self.label.grid(row=0, column=1, padx=(0, 0), pady=(0, 0))
 
             self.kcube_f1 = ctk.CTkFrame(self.kcube_f0)
             self.kcube_f1.grid(row=1, column=0, padx=(5, 5), pady=(5, 5), sticky="nw")
@@ -158,7 +176,7 @@ class App(ctk.CTk):
             self.kcube_bt_home = ctk.CTkButton(self.kcube_f5, width=80, height=20, text="Home", command=self.kcube_home)
             self.kcube_bt_home.grid(row=2, column=0, padx=(5, 5), pady=(5, 5))
 
-            self.kcube_cb_objective = ctk.CTkComboBox(self.kcube_f5, width=80, height=20, values=["05x16", "10x03", "20x05", "40x08", "free"], command=self.kcube_objective)
+            self.kcube_cb_objective = ctk.CTkComboBox(self.kcube_f5, width=80, height=20, values=["zero", "05x16", "10x03", "20x05", "40x08"], command=self.kcube_objective)
             self.kcube_cb_objective.grid(row=3, column=0, padx=(5, 5), pady=(5, 5))
 
             kcube_sn_info = "SN: " + kcube_serial_number

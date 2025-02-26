@@ -21,11 +21,11 @@ kcube_serial_number = 28250442
 kcube_stepsize = 0.5
 
 # Slider position for dedicated microscope objective lenses
+zero  =  0.0
 05x16 = 10.0
 10x03 = 7.35
 20x05 = 30.0
 40x08 = 40.0
-free  = 50.0
 
 last_selected = 10x03
 
