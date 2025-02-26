@@ -52,9 +52,9 @@ class App(ctk.CTk):
             kcube_serial_number = FILEIO.read_value(self.config_path, 'kcube_serial_number')
             kcube_stepsize = FILEIO.read_value(self.config_path, 'kcube_stepsize')
 
-# region GUI SETup
+# region GUI
 
-# region nidaq
+# region NIDAQ
 
         if self.using_nidaq is True:
 
@@ -87,8 +87,12 @@ class App(ctk.CTk):
             self.nidaq_f2 = ctk.CTkFrame(self.nidaq_f1, fg_color="transparent")
             self.nidaq_f2.grid(row=3, column=0, padx=(5, 5), pady=(0, 0))
 
-            self.nidaq_sldr = ctk.CTkSlider(self.nidaq_f2, orientation=ctk.VERTICAL, from_=0, to=400, command=self.nidaq_slider)
+            self.nidaq_sldr = ctk.CTkSlider(self.nidaq_f2, orientation=ctk.VERTICAL, from_=0, to=400)
             self.nidaq_sldr.grid(row=0, column=0, padx=(5, 5), pady=(0, 0))
+            
+            self.nidaq_sldr.bind("<ButtonPress-1>", self.on_mouse_down)  # Mouse down event
+            self.nidaq_sldr.bind("<ButtonRelease-1>", self.on_mouse_up)  # Mouse up event
+            self.nidaq_sldr.bind("<B1-Motion>", self.on_slider_move)  # Continuous update while moving the slider
 
             self.nidaq_f3 = ctk.CTkFrame(self.nidaq_f1, fg_color="transparent")
             self.nidaq_f3.grid(row=3, column=1, padx=(5, 5), pady=(0, 0))
@@ -277,16 +281,29 @@ class App(ctk.CTk):
         self.nidaq_lb.configure(text=str(self.nidaq_position))
         self.nidaq_sldr.set(self.nidaq_position)
 
-    def nidaq_slider(self, value) -> None:
-        ''' nidaq_slider '''
+    def on_mouse_down(self, event):
+        ''' on_mouse_down '''
+        
+        self.nidaq_position = self.nidaq_sldr.get()
+        self.nidaq_update_stage_position_label()
+
+    def on_slider_move(self, event):
+        ''' on_slider_move '''
+        
+        self.nidaq_position = self.nidaq_sldr.get()
+        self.nidaq_update_stage_position_label()
+
+    def on_mouse_up(self, event):
+        ''' nidaq slider mouse up event '''
+        
+        value = self.nidaq_sldr.get()
+        self.nidaq_update_stage_position_label()
 
         value = self.nidaq_check_limit(value)
 
         analog_out_value = self.value_to_analog_out_value(self.nidaq_position)
-        print(self.nidaq_position)
-        print(analog_out_value)
 
-        self.nidaq.set_position(analog_out_value)
+        self.nidaq.set_position(analog_out_value)        
         self.nidaq_update_stage_position_label()
 
     def nidaq_step(self, value):
@@ -336,22 +353,14 @@ class App(ctk.CTk):
     def nidaq_update_stage_from_entry_field(self) -> None:
         ''' nidaq_update_stage_from_entry_field '''
 
-        if self.nidaq_DRV_MODE == 0:
-            self.nidaq.set_position(float(self.STAGE_entry_field.get()))
-            self.nidaq_update_stage_position_label()
-        else:
-            self.nidaq.set_position(float(self.STAGE_entry_field.get()))
-            self.nidaq_update_stage_position_label()
+        self.nidaq.set_position(float(self.STAGE_entry_field.get()))
+        self.nidaq_update_stage_position_label()
 
     def nidaq_update_stage_position_label(self) -> None:
         ''' nidaq_update_stage_position_label '''
 
-        if self.nidaq_DRV_MODE == 0:
-            self.nidaq_lb.configure(text=self.nidaq.get_position())
-            self.nidaq_sldr.set(float(self.nidaq.get_position()))
-        else:
-            self.nidaq_lb.configure(text=self.nidaq.get_position())
-            self.nidaq_sldr.set(float(self.nidaq.get_position()))
+        self.nidaq_lb.configure(text=self.nidaq.get_position())
+        self.nidaq_sldr.set(float(self.nidaq.get_position()))
 
 # endregion
 

@@ -10,7 +10,7 @@ m.ahrens@uni-luebeck.de
 import nidaqmx
 import nidaqmx.task
 
-__DEBUG__ = True
+__DEBUG__ = False
 
 
 class NidaqHandle:

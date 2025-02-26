@@ -1,6 +1,38 @@
 # mOCT_CTRL
 
-Control software for the focus piezo and reference stage. \
+Control software for the focus piezo and reference stage.
+
+## Installation
+
+- Install **Visual Studio Code** (https://code.visualstudio.com/download)
+- Install **Python 3.12** (https://www.python.org/downloads/release/python-3120/)
+  - Windows installer (64-bit)
+  - Check "Use admin privileges when installing py.exe"
+  - Check "Add python.exe to PATH
+  - Customize installation
+  - Check "Install Python 3.12 for all users"
+  - Check "Disable path length limit" at the end of the installation
+- Download the mOCT_CTRL software from https://github.com/OCTSoftware/mOCT_CTRL/releases/tag/Release (zip file)
+- Unzip files (and folders) to C:\mOCT\mOCT_CTRL
+
+- Open Visual Studio Code
+- Under Extensions (left site) enter **Python Extension Pack** and install it
+
+- File -> Open folder ----> C:\mOCT\mOCT_CTRL
+- Check "Yes trust this author" ;)
+- Terminal -> New terminal
+- Run "pip install -r .\requirements.txt"
+
+- Start the **Kinesis software from Thorlabs** and check/note the serial number of the KCUBE.
+- Start the **NI MAX Explorer from Ni** and view under Devices and Connections which name das the NI-USB-6001 device (e.g. Dev2).
+
+- Select "Visual Studio Code -> Explorer" (left site) the file \_internal/config.txt and change the kcube_serial_number=28**\*\*** and the nidaq_device=Dev\*
+- Select "Visual Studio Code -> Explorer" the fie **mOCT_CTRL.py**
+
+- Click on the run button (right / top in "Visual Studio Code"
+
+## Configuration
+
 All settings are made in Config.txt **before** the program starts.
 
 ### Select devices
@@ -26,7 +58,7 @@ True or False
 
 **Slider position for dedicated microscope objectiv lenses**
 
-> zero  =  0.0 \
+> zero = 0.0 \
 > 05x16 = 10.0 \
 > 10x03 = 20.0 \
 > 20x05 = 30.0 \
