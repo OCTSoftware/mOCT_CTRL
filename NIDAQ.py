@@ -34,7 +34,7 @@ class NidaqHandle:
             self.task_out = nidaqmx.Task()
             self.task_out.ao_channels.add_ao_voltage_chan(ao, min_val=0, max_val=5.0)
 
-            self.task_in  = nidaqmx.Task()
+            self.task_in = nidaqmx.Task()
             self.task_in.ai_channels.add_ai_voltage_chan(ai)
 
             if __DEBUG__:

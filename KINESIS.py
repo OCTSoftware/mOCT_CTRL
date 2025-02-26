@@ -132,10 +132,3 @@ class KcubeHandle:
         self.stage_enabled = False
         self.kcube.Disconnect(True)
         print(f"KCube disconnected ...")
-
-
-#----------------------------------------------------------------------------------------------
-if __name__ == '__main__':
-    kcube = KcubeHandle("28000001")
-    kcube.home()
-    kcube.disconnect()

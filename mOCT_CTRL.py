@@ -11,6 +11,7 @@ from version import __version__
 from PIL import Image, ImageTk
 from pathlib import Path
 import customtkinter as ctk
+import math
 
 from fileIO import FILEIO
 
@@ -87,12 +88,11 @@ class App(ctk.CTk):
             self.nidaq_f2 = ctk.CTkFrame(self.nidaq_f1, fg_color="transparent")
             self.nidaq_f2.grid(row=3, column=0, padx=(5, 5), pady=(0, 0))
 
-            self.nidaq_sldr = ctk.CTkSlider(self.nidaq_f2, orientation=ctk.VERTICAL, from_=0, to=400)
+            self.nidaq_sldr = ctk.CTkSlider(self.nidaq_f2, orientation=ctk.VERTICAL, height=120, from_=0, to=400)
             self.nidaq_sldr.grid(row=0, column=0, padx=(5, 5), pady=(0, 0))
-            
-            self.nidaq_sldr.bind("<ButtonPress-1>", self.on_mouse_down)  # Mouse down event
-            self.nidaq_sldr.bind("<ButtonRelease-1>", self.on_mouse_up)  # Mouse up event
-            self.nidaq_sldr.bind("<B1-Motion>", self.on_slider_move)  # Continuous update while moving the slider
+            self.nidaq_sldr.bind("<ButtonPress-1>", self.nidaq_on_mouse_down)
+            self.nidaq_sldr.bind("<ButtonRelease-1>", self.nidaq_on_mouse_up)
+            self.nidaq_sldr.bind("<B1-Motion>", self.nidaq_on_slider_move)
 
             self.nidaq_f3 = ctk.CTkFrame(self.nidaq_f1, fg_color="transparent")
             self.nidaq_f3.grid(row=3, column=1, padx=(5, 5), pady=(0, 0))
@@ -105,6 +105,9 @@ class App(ctk.CTk):
 
             self.nidaq_bt_go = ctk.CTkButton(self.nidaq_f3, width=80, height=20, text="Go", command=self.nidaq_go)
             self.nidaq_bt_go.grid(row=2, column=0, padx=(5, 5), pady=(5, 5))
+
+            self.nidaq_bt_center = ctk.CTkButton(self.nidaq_f3, width=80, height=20, text="Center", command=self.nidaq_center)
+            self.nidaq_bt_center.grid(row=3, column=0, padx=(5, 5), pady=(5, 5))
 
             self.nidaq_bt_m1 = ctk.CTkButton(self.nidaq_f1, width=80, height=20, text="- 1", command=self.nidaq_move_down_1)
             self.nidaq_bt_m1.grid(row=6, column=0, padx=(5, 5), pady=(5, 5))
@@ -141,14 +144,32 @@ class App(ctk.CTk):
             self.kcube_f2 = ctk.CTkFrame(self.kcube_f1, fg_color="transparent")
             self.kcube_f2.grid(row=0, column=0, padx=(5, 5), pady=(10, 10))
 
-            self.kcube_bt_up = ctk.CTkButton(self.kcube_f2, width=80, height=20, text=kcube_stepsize, command=self.kcube_move_up)
-            self.kcube_bt_up.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
-
             self.kcube_f3 = ctk.CTkFrame(self.kcube_f2, fg_color="transparent")
             self.kcube_f3.grid(row=1, column=0, padx=(5, 5), pady=(0, 0))
 
-            self.kcube_sldr = ctk.CTkSlider(self.kcube_f3, orientation=ctk.VERTICAL, from_=0, to=100, command=self.kcube_slider)
-            self.kcube_sldr.grid(row=0, column=0, padx=(5, 5), pady=(0, 0))
+            self.kcube_bt_p100 = ctk.CTkButton(self.kcube_f3, width=80, height=20, text="+100 µm", command=self.kcube_move_up_100)
+            self.kcube_bt_p100.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
+
+            self.kcube_bt_p50 = ctk.CTkButton(self.kcube_f3, width=80, height=20, text="+50 µm", command=self.kcube_move_up_50)
+            self.kcube_bt_p50.grid(row=1, column=0, padx=(5, 5), pady=(5, 5))
+
+            self.kcube_bt_p10 = ctk.CTkButton(self.kcube_f3, width=80, height=20, text="+10 µm", command=self.kcube_move_up_10)
+            self.kcube_bt_p10.grid(row=2, column=0, padx=(5, 5), pady=(5, 5))
+
+            self.kcube_sldr = ctk.CTkSlider(self.kcube_f3, orientation=ctk.VERTICAL, height=120, from_=0, to=100)
+            self.kcube_sldr.grid(row=3, column=0, padx=(5, 5), pady=(0, 0))
+            self.kcube_sldr.bind("<ButtonPress-1>", self.kcube_on_mouse_down)
+            self.kcube_sldr.bind("<ButtonRelease-1>", self.kcube_on_mouse_up)
+            self.kcube_sldr.bind("<B1-Motion>", self.kcube_on_slider_move)
+
+            self.kcube_bt_m10 = ctk.CTkButton(self.kcube_f3, width=80, height=20, text="-10 µm", command=self.kcube_move_down_10)
+            self.kcube_bt_m10.grid(row=4, column=0, padx=(5, 5), pady=(5, 5))
+
+            self.kcube_bt_m50 = ctk.CTkButton(self.kcube_f3, width=80, height=20, text="-50 µm", command=self.kcube_move_down_50)
+            self.kcube_bt_m50.grid(row=5, column=0, padx=(5, 5), pady=(5, 5))
+
+            self.kcube_bt_m100 = ctk.CTkButton(self.kcube_f3, width=80, height=20, text="-100 µm", command=self.kcube_move_down_100)
+            self.kcube_bt_m100.grid(row=7, column=0, padx=(5, 5), pady=(5, 5))
 
             self.kcube_f4 = ctk.CTkFrame(self.kcube_f2, fg_color="transparent")
             self.kcube_f4.grid(row=1, column=1, padx=(5, 5), pady=(0, 0))
@@ -161,9 +182,6 @@ class App(ctk.CTk):
 
             self.kcube_bt_go = ctk.CTkButton(self.kcube_f4, width=80, height=20, text="Go", command=self.kcube_go)
             self.kcube_bt_go.grid(row=2, column=0, padx=(5, 5), pady=(5, 5))
-
-            self.kcube_tf_stepsize = ctk.CTkEntry(self.kcube_f4, width=80, height=20, placeholder_text=str(kcube_stepsize))
-            self.kcube_tf_stepsize.grid(row=3, column=0, padx=(5, 5), pady=(5, 5))
 
             self.kcube_lb_void = ctk.CTkLabel(self.kcube_f4, width=80, height=20, text="")
             self.kcube_lb_void.grid(row=4, column=0, padx=(5, 5), pady=(5, 5))
@@ -180,15 +198,12 @@ class App(ctk.CTk):
             self.kcube_bt_home = ctk.CTkButton(self.kcube_f5, width=80, height=20, text="Home", command=self.kcube_home)
             self.kcube_bt_home.grid(row=2, column=0, padx=(5, 5), pady=(5, 5))
 
-            self.kcube_cb_objective = ctk.CTkComboBox(self.kcube_f5, width=80, height=20, values=["zero", "05x16", "10x03", "20x05", "40x08"], command=self.kcube_objective)
+            self.kcube_cb_objective = ctk.CTkComboBox(self.kcube_f5, width=80, height=20, values=["home", "05x16", "10x03", "20x05", "40x08"], command=self.kcube_objective)
             self.kcube_cb_objective.grid(row=3, column=0, padx=(5, 5), pady=(5, 5))
 
             kcube_sn_info = "SN: " + kcube_serial_number
             self.kcube_lb_vers = ctk.CTkLabel(self.kcube_f5, width=80, height=20, text=kcube_sn_info)
             self.kcube_lb_vers.grid(row=4, column=0, padx=(5, 5), pady=(5, 5))
-
-            self.kcube_bt_down = ctk.CTkButton(self.kcube_f2, width=80, height=20, text=kcube_stepsize, command=self.kcube_move_down)
-            self.kcube_bt_down.grid(row=2, column=0, padx=(5, 5), pady=(5, 5))
 
 # endregion
 
@@ -229,6 +244,8 @@ class App(ctk.CTk):
             self.kcube_position = self.kcube.get_position()
             self.kcube_lb_position.configure(text=str(self.kcube_position))
             self.kcube_sldr.set(self.kcube_position)
+
+        self.nidaq_center()
 
 # endregion
 
@@ -278,33 +295,47 @@ class App(ctk.CTk):
         print(analog_out_value)
 
         self.nidaq.set_position(analog_out_value)
-        self.nidaq_lb.configure(text=str(self.nidaq_position))
+        self.nidaq_lb.configure(text=f"{self.nidaq_position:.2f}")
         self.nidaq_sldr.set(self.nidaq_position)
 
-    def on_mouse_down(self, event):
-        ''' on_mouse_down '''
-        
-        self.nidaq_position = self.nidaq_sldr.get()
-        self.nidaq_update_stage_position_label()
+    def nidaq_center(self) -> None:
+        ''' nidaq_center '''
 
-    def on_slider_move(self, event):
-        ''' on_slider_move '''
-        
-        self.nidaq_position = self.nidaq_sldr.get()
-        self.nidaq_update_stage_position_label()
-
-    def on_mouse_up(self, event):
-        ''' nidaq slider mouse up event '''
-        
-        value = self.nidaq_sldr.get()
-        self.nidaq_update_stage_position_label()
-
-        value = self.nidaq_check_limit(value)
+        self.nidaq_position = 200
+        self.nidaq_position = self.nidaq_check_limit(self.nidaq_position)
 
         analog_out_value = self.value_to_analog_out_value(self.nidaq_position)
 
-        self.nidaq.set_position(analog_out_value)        
+        self.nidaq.set_position(analog_out_value)
+        self.nidaq_lb.configure(text=f"{self.nidaq_position:.2f}")
+        self.nidaq_sldr.set(self.nidaq_position)
+
+    def nidaq_on_mouse_down(self, event):
+        ''' on_mouse_down '''
+
+        self.nidaq_position = self.nidaq_sldr.get()
         self.nidaq_update_stage_position_label()
+
+    def nidaq_on_slider_move(self, event):
+        ''' on_slider_move '''
+
+        self.nidaq_position = self.nidaq_sldr.get()
+        self.nidaq_update_stage_position_label()
+
+    def nidaq_on_mouse_up(self, event):
+        ''' nidaq slider mouse up event '''
+
+        self.nidaq_position = self.nidaq_sldr.get()
+        self.nidaq_update_stage_position_label()
+
+        value = self.nidaq_check_limit(self.nidaq_position)
+
+        analog_out_value = self.value_to_analog_out_value(value)
+
+        self.nidaq.set_position(analog_out_value)
+        self.nidaq_update_stage_position_label()
+        print(value)
+        self.nidaq_sldr.set(value)
 
     def nidaq_step(self, value):
         ''' nidaq_step '''
@@ -317,7 +348,7 @@ class App(ctk.CTk):
         print(analog_out_value)
 
         self.nidaq.set_position(analog_out_value)
-        self.nidaq_lb.configure(text=str(self.nidaq_position))
+        self.nidaq_lb.configure(text=f"{self.nidaq_position:.2f}")
         self.nidaq_sldr.set(self.nidaq_position)
 
     def nidaq_move_up_50(self) -> None:
@@ -359,8 +390,8 @@ class App(ctk.CTk):
     def nidaq_update_stage_position_label(self) -> None:
         ''' nidaq_update_stage_position_label '''
 
-        self.nidaq_lb.configure(text=self.nidaq.get_position())
-        self.nidaq_sldr.set(float(self.nidaq.get_position()))
+        self.nidaq_lb.configure(text=f"{self.nidaq_position:.2f}")
+        self.nidaq_sldr.set(self.nidaq_position)
 
 # endregion
 
@@ -386,48 +417,74 @@ class App(ctk.CTk):
         self.kcube.home()
         self.kcube_bt_home.configure(fg_color='green', text='homed')
         self.kcube_position = self.kcube.get_position()
-        self.kcube_lb_position.configure(text=str(self.kcube_position))
+        self.kcube_lb_position.configure(text=f"{self.kcube_position:.2f}")
 
-    def kcube_move_up(self) -> None:
-        ''' kcube_move_up '''
+    def kcube_move(self, stepsize) -> None:
+        ''' kcube_move '''
 
-        stepsize = self.kcube_tf_stepsize.get()
-        self.kcube_bt_up.configure(text=str(stepsize))
-        self.kcube_bt_down.configure(text=str(stepsize))
         self.kcube_position = float(self.kcube_position) + float(stepsize)
         self.kcube.set_position(float(self.kcube_position))
-        self.kcube_lb_position.configure(text=str(self.kcube_position))
+        self.kcube_lb_position.configure(text=f"{self.kcube_position:.2f}")
         self.kcube_sldr.set(self.kcube_position)
 
-    def kcube_move_down(self) -> None:
-        ''' kcube_move_down '''
+    def kcube_move_up_100(self) -> None:
+        ''' nidaq_move_up_100 '''
 
-        stepsize = self.kcube_tf_stepsize.get()
-        self.kcube_bt_up.configure(text=str(stepsize))
-        self.kcube_bt_down.configure(text=str(stepsize))
-        self.kcube_position = float(self.kcube_position) - float(stepsize)
-        self.kcube.set_position(float(self.kcube_position))
-        self.kcube_lb_position.configure(text=str(self.kcube_position))
-        self.kcube_sldr.set(self.kcube_position)
+        self.kcube_move(0.1)
+
+    def kcube_move_up_50(self) -> None:
+        ''' kcube_move_up_50 '''
+
+        self.kcube_move(0.05)
+
+    def kcube_move_up_10(self) -> None:
+        ''' kcube_move_up_10 '''
+
+        self.kcube_move(0.01)
+
+    def kcube_move_down_10(self) -> None:
+        ''' kcube_move_down_10 '''
+
+        self.kcube_move(-0.01)
+
+    def kcube_move_down_50(self) -> None:
+        ''' kcube_move_down_50 '''
+
+        self.kcube_move(-0.05)
+
+    def kcube_move_down_100(self) -> None:
+        ''' kcube_move_down_100 '''
+
+        self.kcube_move(-0.1)
 
     def kcube_velocity_parameter(self, selected_value) -> None:
         ''' kcube_velocity_parameter '''
 
         self.kcube.set_velocity_params(velocity_key=selected_value)
 
-    def kcube_slider(self, selected_value) -> None:
-        ''' kcube_slider '''
+    def kcube_on_mouse_down(self, event) -> None:
+        ''' on_mouse_down '''
 
-        self.kcube.set_position(selected_value)
-        self.kcube_position = self.kcube.get_position()
-        self.kcube_lb_position.configure(text=str(self.kcube_position))
+        self.kcube_position = self.kcube_sldr.get()
+        #self.nidaq_update_stage_position_label()
+
+    def kcube_on_slider_move(self, event) -> None:
+        ''' on_slider_move '''
+
+        self.nidaq_position = self.kcube_sldr.get()
+
+    def kcube_on_mouse_up(self, event) -> None:
+        ''' kcube slider mouse up event '''
+
+        self.kcube.set_position(self.kcube_position)
+        self.kcube_lb_position.configure(text=f"{self.kcube_position:.2f}")
 
     def kcube_go(self) -> None:
         ''' kcube_go '''
 
         self.kcube_position = float(self.kcube_tf_position.get())
         self.kcube.set_position(self.kcube_position)
-        self.kcube_lb_position.configure(text=str(self.kcube_position))
+        self.kcube_lb_position.configure(text=f"{self.kcube_position:.2f}")
         self.kcube_sldr.set(self.kcube_position)
 
     def kcube_objective(self, selected_value) -> None:
@@ -435,10 +492,10 @@ class App(ctk.CTk):
 
         print("Selected objective = ", selected_value)
         self.kcube_position = FILEIO.read_value(self.config_path, selected_value)
-        self.kcube_lb_position.configure(text=str(self.kcube_position))
+        self.kcube_lb_position.configure(text=f"{self.kcube_position:.2f}")
         self.kcube.set_position(float(self.kcube_position))
         self.kcube_sldr.set(float(self.kcube_position))
-        self.kcube_tf_position.configure(placeholder_text=str(self.kcube_position))
+        self.kcube_tf_position.configure(placeholder_text=f"{self.kcube_position:.2f}")
 
 # endregion
 
