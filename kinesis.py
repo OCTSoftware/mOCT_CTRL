@@ -7,8 +7,8 @@ Created on Oct 6, 2023 by Maron Dolling
 m.dolling@uni-luebeck.de
 """
 
-import clr
 import time
+import clr
 
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.DeviceManagerCLI.dll.")
 clr.AddReference("C:\\Program Files\\Thorlabs\\Kinesis\\Thorlabs.MotionControl.GenericMotorCLI.dll.")
@@ -19,17 +19,21 @@ from Thorlabs.MotionControl.GenericMotorCLI import *
 from Thorlabs.MotionControl.KCube.BrushlessMotorCLI import *
 from System import Decimal
 
+__DEBUG__ = False
+
 
 class KcubeHandle:
+    ''' Class KcubeHandle '''
 
     stage_enabled = False
     stage_homed = False
 
-    #----------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
     def __init__(self, serial_no: str) -> None:
         '''
         Initialize instance: load DLLs and connect to KCube
         '''
+
         DeviceManagerCLI.BuildDeviceList()
         self.serial_no = serial_no
 
@@ -52,83 +56,93 @@ class KcubeHandle:
             assert self.kcube.IsSettingsInitialized() is True
 
         # Before homing or moving device, ensure the motors configuration is loaded
-        m_config = self.kcube.LoadMotorConfiguration(self.serial_no,
-            DeviceConfiguration.DeviceSettingsUseOptionType.UseDeviceSettings)
+        m_config = self.kcube.LoadMotorConfiguration(self.serial_no, DeviceConfiguration.DeviceSettingsUseOptionType.UseDeviceSettings)
 
         time.sleep(1)
         self.set_velocity_params()
-
         self.stage_enabled = True
+        if __DEBUG__:
+            print("KCube connected")
 
-        print(f"KCube connected ...")
-
-    #----------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
     def home(self) -> None:
         '''
         Set home position.
         '''
-        self.kcube.Home(60000)  # 60 second timeout
-        print(f"KCube homed ...")
 
-    #----------------------------------------------------------------------------------------------
-    def set_position(self, value : float) -> None:
+        self.kcube.Home(60000)  # 60 second timeout
+        if __DEBUG__:
+            print("KCube homed")
+
+# -----------------------------------------------------------------------------
+    def set_position(self, value: float) -> None:
         '''
         Move the stage to a certain position.
         '''
+
         value = Decimal(value)
         self.kcube.MoveTo(value, 60000)
+        if __DEBUG__:
+            print(f"KCube position is {value:.2f}")
 
-    #----------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
     def get_position(self) -> float:
         '''
         Move the stage to a certain position.
         '''
-        pos = self.kcube.get_Position()
-        return pos.ToDouble(pos)
 
-    #----------------------------------------------------------------------------------------------
+        value = self.kcube.get_Position()
+        if __DEBUG__:
+            print(f"KCube position is {value:.2f}")
+
+        return float(value)
+
+# -----------------------------------------------------------------------------
     def set_velocity_params(self, velocity_key: str = "medium") -> None:
         '''
         Change the preset Kcube velocity parameters.
         '''
+
         match velocity_key:
             case "slow":            # for small and slow movement
-                vcode = 1
+                velocity = 1
             case "medium":          # default
-                vcode = 50
+                velocity = 50
             case "fast":            # faster
-                vcode = 500
+                velocity = 500
             case "slider_control":  # for slider control, faster response is necessary
-                vcode = 1000
+                velocity = 1000
             case _:
                 print("Invalid velocity param command given")
 
         # set the desired velocity params
-        self.kcube.SetVelocityParams(Decimal(vcode), Decimal(vcode))
+        self.kcube.SetVelocityParams(Decimal(velocity), Decimal(velocity))
 
-    #----------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
     def enable(self) -> None:
         '''
         Enable / disable  KCube
         '''
-        if(self.stage_enabled == True):
 
+        if self.stage_enabled is True:
             self.kcube.DisableDevice()
-            print(f"KCube disabled ...")
+            if __DEBUG__:
+                print("KCube disabled")
 
         else:
-
             self.kcube.EnableDevice()
-            print(f"KCube enabled ...")
+            if __DEBUG__:
+                print("KCube enabled")
 
-
-    #----------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
     def disconnect(self) -> None:
         '''
         Stop polling, disable and disconnect the device.
         '''
+
         self.kcube.StopPolling()
         self.kcube.DisableDevice()
         self.stage_enabled = False
         self.kcube.Disconnect(True)
-        print(f"KCube disconnected ...")
+        if __DEBUG__:
+            print("KCube disconnected")
