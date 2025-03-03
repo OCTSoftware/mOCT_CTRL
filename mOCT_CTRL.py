@@ -635,14 +635,12 @@ class mOCT_CTRL(ctk.CTk):
                 self.nkt_emission_state = True
                 self.nkt_bt_laser.configure(fg_color='red')
                 print("Set emission on")
-                print(self.nkt.get_power())
 
             else:
                 self.nkt.set_emission(False)
                 self.nkt_emission_state = False
                 self.nkt_bt_laser.configure(fg_color='#3a7ebf')
                 print("Set emission off")
-                print(self.nkt.get_power())
 
     def nkt_power(self) -> None:
         ''' nkt change laser power '''
