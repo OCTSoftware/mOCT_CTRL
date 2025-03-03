@@ -1,34 +1,39 @@
-"""
-main.py
+''' mOCT_CTRL.py '''
 
-Class to control the config file
 
-Created on Feb 20, 2025 by Martin Ahrens
-m.ahrens@uni-luebeck.de
-"""
-
-from version import __version__
-from PIL import Image, ImageTk
-from pathlib import Path
-import customtkinter as ctk
 import math
+import time
+from pathlib import Path
+import tkinter as tk
+import customtkinter as ctk
 
 from fileIO import FILEIO
 
-from nidaq import NidaqHandle
-from kinesis import KcubeHandle
+from check_config import CheckConfig
+
+from version import __version__
 
 
-class App(ctk.CTk):
-    """ Main app """
+class mOCT_CTRL(ctk.CTk):
+    ''' Main app '''
+
+    # main.py    #
+    # Class to control the config file
+    # Created on Feb 20, 2025 by Martin Ahrens
+    # m.ahrens@uni-luebeck.de
+
 
     config_path = str(Path.cwd()) + "\\_internal\\" + "config.txt"
 
-    using_kcube = bool(FILEIO.read_value(config_path, 'using_kcube'))
-    using_nidaq = bool(FILEIO.read_value(config_path, 'using_nidaq'))
-    using_gui_control = bool(FILEIO.read_value(config_path, 'using_gui_control'))
+    using_kcube = CheckConfig.load_variables(config_path, 'using_kcube')
+    using_nidaq = CheckConfig.load_variables(config_path, 'using_nidaq')
+    using_nkt = CheckConfig.load_variables(config_path, 'using_nkt')
+    using_gui_control = CheckConfig.load_variables(config_path, 'using_gui_control')
 
     nidaq_DRV_MODE = str(FILEIO.read_value(config_path, 'nidaq_DRV_MODE'))
+
+
+# region __init__
 
     def __init__(self):
         super().__init__()
@@ -40,9 +45,14 @@ class App(ctk.CTk):
         self.kcube_position = float(0.0)
         self.nidaq_position = float(0.0)
 
+        self.nkt_emission_state = False
+        self.nkt_interlock_state = False
+
         self.appearance_mode = "light"
 
         if self.using_nidaq is True:
+
+            from nidaq import NidaqHandle
 
             nidaq_device = FILEIO.read_value(self.config_path, 'nidaq_device')
             nidaq_ao_port = FILEIO.read_value(self.config_path, 'nidaq_ao_port')
@@ -52,10 +62,20 @@ class App(ctk.CTk):
 
         if self.using_kcube is True:
 
+            from kinesis import KcubeHandle
+
             kcube_serial_number = FILEIO.read_value(self.config_path, 'kcube_serial_number')
             last_selected = FILEIO.read_value(self.config_path, 'last_selected')
 
-# region GUI
+        if self.using_nkt is True:
+
+            from PIL import Image, ImageTk
+
+            from nkt import NktHandle
+
+            nkt_device = FILEIO.read_value(self.config_path, 'nkt_device')
+
+# endregion
 
 # region NIDAQ
 
@@ -210,6 +230,46 @@ class App(ctk.CTk):
             self.kcube_lb_vers.grid(row=4, column=0, padx=(5, 5), pady=(70, 5))
 # endregion
 
+# region NKT
+
+        if self.using_nkt is True:
+
+            self.nkt_f0 = ctk.CTkFrame(self, fg_color="transparent")
+            self.nkt_f0.grid(row=0, column=2, padx=(2.5, 5), pady=(5, 5), sticky="nw")
+
+            self.nkt_f01 = ctk.CTkFrame(self.nkt_f0, fg_color="transparent")
+            self.nkt_f01.grid(row=0, column=0, padx=(5, 2.5), pady=(5, 5), sticky="nw")
+
+            self.nkt_lb = ctk.CTkLabel(self.nkt_f01, width=75, height=20, font=("Cosmic Sans MS", 18, "normal"), text="NKT")
+            self.nkt_lb.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
+
+            image = Image.open("_internal/laser.png")
+            ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(40, 40))
+            self.label = ctk.CTkLabel(self.nkt_f01, image=ctk_image, text="")
+            self.label.grid(row=0, column=1, padx=(0, 0), pady=(0, 0))
+
+            self.nkt_f1 = ctk.CTkFrame(self.nkt_f0, border_width=1, fg_color="transparent")
+            self.nkt_f1.grid(row=1, column=0, padx=(5, 5), pady=(5, 5), sticky="nw")
+
+            self.nkt_bt_power = ctk.CTkButton(self.nkt_f1, width=75, height=20, text="Interlock", command=self.nkt_interlock)
+            self.nkt_bt_power.grid(row=0, column=0, padx=(5, 5), pady=(20, 5))
+
+            self.nkt_bt_laser = ctk.CTkButton(self.nkt_f1, width=75, height=20, text="On/Off", command=self.nkt_laser)
+            self.nkt_bt_laser.grid(row=1, column=0, padx=(5, 5), pady=(5, 20))
+
+            self.nkt_sldr = ctk.CTkSlider(self.nkt_f1, orientation=ctk.HORIZONTAL, width=80, from_=25, to=100)
+            self.nkt_sldr.set(100)
+            self.nkt_sldr.grid(row=2, column=0, padx=(5, 5), pady=(0, 0))
+            self.nkt_sldr.bind("<ButtonPress-1>", self.nkt_on_mouse_down)
+            self.nkt_sldr.bind("<ButtonRelease-1>", self.nkt_on_mouse_up)
+            self.nkt_sldr.bind("<B1-Motion>", self.nkt_on_slider_move)
+
+            self.nkt_tf_power = ctk.CTkLabel(self.nkt_f1, width=75, height=20, text="0")
+            self.nkt_tf_power.configure(text='100')
+            self.nkt_tf_power.grid(row=3, column=0, padx=(5, 40), pady=(5, 5))
+
+# endregion
+
 # region GUI controls
 
         if self.using_kcube is True:
@@ -221,17 +281,14 @@ class App(ctk.CTk):
             self.f31.grid(row=0, column=0, padx=(5, 5), pady=(0, 0))
 
             self.f3_switch = ctk.CTkSwitch(self.f31, text="Dark/Light", command=self.set_appearance_mode, onvalue="dark", offvalue="light")
-            self.f3_switch.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
-
-            self.f3_bt_1 = ctk.CTkButton(self.f31, width=75, height=20, text="Save", fg_color='gray')
-            self.f3_bt_1.grid(row=0, column=1, padx=(5, 5), pady=(5, 5))
+            self.f3_switch.grid(row=0, column=0, padx=(5, 20), pady=(5, 5))
 
             self.f3_bt_2 = ctk.CTkButton(self.f31, width=75, height=20, text="Exit", command=self.exit)
-            self.f3_bt_2.grid(row=0, column=2, padx=(5, 5), pady=(5, 5))
+            self.f3_bt_2.grid(row=0, column=1, padx=(20, 5), pady=(5, 5))
 
 # endregion
 
-# region device setup
+# region DEVICE setup
 
         if self.using_nidaq is True:
 
@@ -250,6 +307,10 @@ class App(ctk.CTk):
             self.kcube_bt_enable.configure(fg_color='green', text='enabled')
             self.kcube_lb_position.configure(text=str(self.kcube_position))
             self.kcube_sldr.set(float(self.kcube_position))
+
+        if self.using_nkt is True:
+
+            self.nkt = NktHandle(nkt_device)
 
 
 # endregion
@@ -404,7 +465,7 @@ class App(ctk.CTk):
 
 # endregion
 
-# #region kcube related commands
+# region KCUBE related commands
 
     def kcube_enable(self) -> None:
         ''' kcube_enable '''
@@ -428,10 +489,19 @@ class App(ctk.CTk):
         self.kcube_position = self.kcube.get_position()
         self.kcube_lb_position.configure(text=f"{self.kcube_position:.2f}")
 
+    def kcube_check_limit(self, value) -> float:
+        ''' kcube_check_limit '''
+
+        value = max(value, 0)
+        value = min(value, 100)
+
+        return value
+
     def kcube_move(self, stepsize) -> None:
         ''' kcube_move '''
 
         self.kcube_position = float(self.kcube_position) + float(stepsize)
+        self.kcube_position = self.kcube_check_limit(self.kcube_position)
         self.kcube.set_position(float(self.kcube_position))
         self.kcube_lb_position.configure(text=f"{self.kcube_position:.2f}")
         self.kcube_sldr.set(self.kcube_position)
@@ -475,7 +545,6 @@ class App(ctk.CTk):
         ''' on_mouse_down '''
 
         self.kcube_position = self.kcube_sldr.get()
-        #self.nidaq_update_stage_position_label()
 
     def kcube_on_slider_move(self, event) -> None:
         ''' on_slider_move '''
@@ -492,6 +561,7 @@ class App(ctk.CTk):
         ''' kcube_go '''
 
         self.kcube_position = float(self.kcube_tf_position.get())
+        self.kcube_position = self.kcube_check_limit(self.kcube_position)
         self.kcube.set_position(self.kcube_position)
         self.kcube_lb_position.configure(text=f"{self.kcube_position:.2f}")
         self.kcube_sldr.set(self.kcube_position)
@@ -507,7 +577,83 @@ class App(ctk.CTk):
 
 # endregion
 
-# region gui related defs
+# region NKT related commands
+
+    def nkt_on_mouse_down(self, event) -> None:
+        ''' nkt_on_mouse_down '''
+
+        val = self.nkt_sldr.get()
+        self.nkt_tf_power.configure(text=f"{val:.2f}")
+
+    def nkt_on_mouse_up(self, event) -> None:
+        ''' nkt_on_mouse_up '''
+
+        val = self.nkt_sldr.get()
+        self.nkt.set_power(val)
+        self.nkt_tf_power.configure(text=f"{val:.2f}")
+        time.sleep(0.1)
+        print(self.nkt.get_power())
+
+    def nkt_on_slider_move(self, event) -> None:
+        ''' nkt_on_slider_move '''
+
+        val = self.nkt_sldr.get()
+        self.nkt_tf_power.configure(text=f"{val:.2f}")
+
+    def nkt_interlock(self) -> None:
+        ''' nkt reset interlock '''
+
+        self.nkt.reset_interlock(self)
+        self.nkt_interlock_state = True
+        self.nkt_bt_power.configure(fg_color='green')
+
+    def nkt_laser(self) -> None:
+        ''' nkt laser on/off '''
+
+        print('State is ' + str(self.nkt_emission_state))
+
+        if self.nkt_interlock_state is False:
+
+            # Popup window that tells the user to reset the interlock
+            popup = ctk.CTkToplevel()
+            popup.title("Information")
+            popup.geometry("200x100")
+            popup.attributes("-topmost", True)
+
+            info_label = ctk.CTkLabel(popup, text="Please reset the interlock",  font=("Arial", 14))
+            info_label.pack(pady=10)
+
+            # Create a button to close the popup
+            close_button = ctk.CTkButton(popup, text="Close", command=popup.destroy)
+            close_button.pack()
+
+        else:
+
+            if self.nkt_emission_state is False:
+                self.nkt.set_emission(True)
+                self.nkt.set_power(100)
+                self.nkt_emission_state = True
+                self.nkt_bt_laser.configure(fg_color='red')
+                print("Set emission on")
+                print(self.nkt.get_power())
+
+            else:
+                self.nkt.set_emission(False)
+                self.nkt_emission_state = False
+                self.nkt_bt_laser.configure(fg_color='#3a7ebf')
+                print("Set emission off")
+                print(self.nkt.get_power())
+
+    def nkt_power(self) -> None:
+        ''' nkt change laser power '''
+
+        value = 100
+        self.nkt.set_power(value)
+        print(self.nkt.get_power())
+
+# endregion
+
+# region GUI related defs
 
     def set_appearance_mode(self) -> None:
         ''' set_appearance_mode '''
@@ -519,6 +665,22 @@ class App(ctk.CTk):
         elif self.appearance_mode == "dark":
             ctk.set_appearance_mode("light")
             self.appearance_mode = "light"
+
+    def info(self) -> None:
+        ''' info'''
+
+        print(__version__)    # Create a new Toplevel window
+        popup = ctk.CTkToplevel()
+        popup.title("Information")
+        popup.geometry("300x150")
+
+        # Create a label to display information
+        info_label = ctk.CTkLabel(popup, text="mOCT-CTRL, v" + __version__,  font=("Arial", 14))
+        info_label.pack(pady=20)
+
+        # Create a button to close the popup
+        close_button = ctk.CTkButton(popup, text="Close", command=popup.destroy)
+        close_button.pack()
 
     def exit(self) -> None:
         ''' exit'''
@@ -541,5 +703,30 @@ class App(ctk.CTk):
 # endregion
 
 
-app = App()
+app = mOCT_CTRL()
+
+app.iconbitmap("_internal\\logo.ico")
+icon = tk.PhotoImage(file="_internal\\logo.png")
+app.wm_iconphoto(False, icon)
+
+menu_bar = tk.Menu(app)
+file_menu = tk.Menu(menu_bar, tearoff=0)
+
+menu_bar.add_cascade(label="File", menu=file_menu)
+file_menu.add_command(label="Info", command=app.info)
+file_menu.add_command(label="Exit", command=app.exit)
+
+option_menu = tk.Menu(menu_bar, tearoff=0)
+
+menu_bar.add_cascade(label="Options", menu=option_menu)
+
+option_menu.add_checkbutton(label="MIPOS", command=app.using_nidaq)
+option_menu.add_checkbutton(label="KINESIS", command=app.using_kcube)
+option_menu.add_checkbutton(label="NKT", command=app.using_nkt)
+
+app.config(menu=menu_bar)
+
+app.protocol("WM_DELETE_WINDOW", app.exit)
+app.resizable(False, False)
+
 app.mainloop()

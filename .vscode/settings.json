@@ -13,6 +13,7 @@
         "pady",
         "sldr",
         "stepsize",
+        "tearoff",
         "Thorlabs"
     ]
 }

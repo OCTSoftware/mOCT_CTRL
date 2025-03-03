@@ -40,7 +40,8 @@ All settings are made in Config.txt **before** the program starts.
 True or False
 
 > USING_MIPOS = True \
-> USING_KCUBE = True
+> USING_KCUBE = True \
+> USING_NKT = True
 
 **NIDAQ board device and ports**
 
@@ -56,13 +57,20 @@ True or False
 
 > KCUBE_STEPSIZE = 0.1
 
-**Slider position for dedicated microscope objectiv lenses**
+**Slider position for dedicated microscope objective lenses**
 
-> zero = 0.0 \
+> zero  =  0.0 \
 > 05x16 = 10.0 \
 > 10x03 = 20.0 \
 > 20x05 = 30.0 \
 > 40x08 = 40.0
+
+**NKT**
+
+> NKT_DEVICE = COM1
+
+
+## Screenshot from the GUI
 
 ![Screenshot from the GUI](GUI.png)
 
