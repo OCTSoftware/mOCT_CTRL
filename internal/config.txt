@@ -13,7 +13,7 @@ nidaq_device = Dev1
 nidaq_ao_port = ao0
 nidaq_ai_port = ai0
 
-nidaq_position = 350.0
+nidaq_position = 20.83
 
 #################################### KCUBE ####################################
 
@@ -22,12 +22,12 @@ kcube_serial_number = 28250442
 
 # Slider position for dedicated microscope objective lenses
 home = 0.00
-05x16 = 42.00
-10x03 = 28.8
-20x05 = 11.67
-40x08 = 42.24
+05x16 = 22.43
+10x03 = 28.94
+20x05 = 0.0
+40x08 = 0.0
 
-last_selected = 10x03
+last_selected = 05x16
 kcube_stepsize = 3.0
 
 ####################################  NKT  ####################################

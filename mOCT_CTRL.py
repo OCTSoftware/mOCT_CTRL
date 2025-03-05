@@ -1,12 +1,13 @@
 ''' mOCT_CTRL.py '''
 
 
-import math
 import time
+import pathlib
 from pathlib import Path
 import tkinter as tk
 import customtkinter as ctk
 
+from PIL import Image
 from fileIO import FILEIO
 
 from check_config import CheckConfig
@@ -14,14 +15,13 @@ from check_config import CheckConfig
 from version import __version__
 
 
-class mOCT_CTRL(ctk.CTk):
+class App(ctk.CTk):
     ''' Main app '''
 
-    # main.py    #
+    # main.py
     # Class to control the config file
     # Created on Feb 20, 2025 by Martin Ahrens
     # m.ahrens@uni-luebeck.de
-
 
     config_path = str(Path.cwd()) + "\\internal\\" + "config.txt"
 
@@ -32,10 +32,9 @@ class mOCT_CTRL(ctk.CTk):
 
     nidaq_DRV_MODE = str(FILEIO.read_value(config_path, 'nidaq_DRV_MODE'))
 
+    def __init__(self) -> None:
+        ''' __init__'''
 
-# region __init__
-
-    def __init__(self):
         super().__init__()
 
         self.title("mOCT CTRL / " + __version__)
@@ -57,29 +56,11 @@ class mOCT_CTRL(ctk.CTk):
             nidaq_device = FILEIO.read_value(self.config_path, 'nidaq_device')
             nidaq_ao_port = FILEIO.read_value(self.config_path, 'nidaq_ao_port')
             nidaq_ai_port = FILEIO.read_value(self.config_path, 'nidaq_ai_port')
+            self.nidaq = NidaqHandle(nidaq_device, nidaq_ao_port, nidaq_ai_port)
+            self.nidaq_lower = self.nidaq.lower_limit
+            self.nidaq_upper = self.nidaq.upper_limit
 
             self.nidaq_position = float(FILEIO.read_value(self.config_path, 'nidaq_position'))
-
-        if self.using_kcube is True:
-
-            from kinesis import KcubeHandle
-
-            kcube_serial_number = FILEIO.read_value(self.config_path, 'kcube_serial_number')
-            last_selected = FILEIO.read_value(self.config_path, 'last_selected')
-
-        if self.using_nkt is True:
-
-            from PIL import Image, ImageTk
-
-            from nkt import NktHandle
-
-            nkt_device = FILEIO.read_value(self.config_path, 'nkt_device')
-
-# endregion
-
-# region NIDAQ
-
-        if self.using_nidaq is True:
 
             self.nidaq_f0 = ctk.CTkFrame(self, fg_color="transparent")
             self.nidaq_f0.grid(row=0, column=0, padx=(5, 2.5), pady=(5, 5), sticky="nw")
@@ -141,11 +122,17 @@ class mOCT_CTRL(ctk.CTk):
             self.nidaq_bt_center = ctk.CTkButton(self.nidaq_f3, width=75, height=20, text="Center", command=self.nidaq_center)
             self.nidaq_bt_center.grid(row=3, column=0, padx=(5, 5), pady=(5, 5))
 
-# endregion
-
-# region KINESIS
+            self.nidaq_init()
 
         if self.using_kcube is True:
+
+            from kinesis import KcubeHandle
+
+            kcube_serial_number = FILEIO.read_value(self.config_path, 'kcube_serial_number')
+            self.kcube_sn_info = "SN: " + kcube_serial_number
+            self.kcube = KcubeHandle(str(int(kcube_serial_number)))
+            self.last_selected = FILEIO.read_value(self.config_path, 'last_selected')
+            self.kcube.stage_enabled = True
 
             self.kcube_f0 = ctk.CTkFrame(self, fg_color="transparent")
             self.kcube_f0.grid(row=0, column=1, padx=(2.5, 5), pady=(5, 5), sticky="nw")
@@ -225,14 +212,21 @@ class mOCT_CTRL(ctk.CTk):
             self.kcube_cb_objective = ctk.CTkComboBox(self.kcube_f5, width=75, height=20, values=["home", "05x16", "10x03", "20x05", "40x08"], command=self.kcube_objective)
             self.kcube_cb_objective.grid(row=3, column=0, padx=(5, 5), pady=(5, 5))
 
-            kcube_sn_info = "SN: " + kcube_serial_number
-            self.kcube_lb_vers = ctk.CTkLabel(self.kcube_f5, width=75, height=20, font=("Cosmic Sans MS", 10, "normal"), text=kcube_sn_info)
+            self.kcube_lb_vers = ctk.CTkLabel(self.kcube_f5, width=75, height=20, font=("Cosmic Sans MS", 10, "normal"), text=self.kcube_sn_info)
             self.kcube_lb_vers.grid(row=4, column=0, padx=(5, 5), pady=(70, 5))
-# endregion
 
-# region NKT
+            self.kcube_cb_objective.set(self.last_selected)
+            self.kcube_position = FILEIO.read_value(self.config_path, self.last_selected)
+
+            self.kcube_bt_enable.configure(fg_color='green', text='enabled')
+            self.kcube_lb_position.configure(text=str(self.kcube_position))
+            self.kcube_sldr.set(float(self.kcube_position))
 
         if self.using_nkt is True:
+
+            from nkt import NktHandle
+            nkt_device = FILEIO.read_value(self.config_path, 'nkt_device')
+            self.nkt = NktHandle(nkt_device)
 
             self.nkt_f0 = ctk.CTkFrame(self, fg_color="transparent")
             self.nkt_f0.grid(row=0, column=2, padx=(2.5, 5), pady=(5, 5), sticky="nw")
@@ -268,52 +262,18 @@ class mOCT_CTRL(ctk.CTk):
             self.nkt_tf_power.configure(text='100')
             self.nkt_tf_power.grid(row=3, column=0, padx=(5, 40), pady=(5, 5))
 
-# endregion
+        self.f3 = ctk.CTkFrame(self, fg_color="transparent")
+        self.f3.grid(row=1, column=1, padx=(5, 5), pady=(0, 5), sticky="se")
 
-# region GUI controls
+        self.f31 = ctk.CTkFrame(self.f3, fg_color="transparent")
+        self.f31.grid(row=0, column=0, padx=(5, 5), pady=(0, 0))
 
-        if self.using_kcube is True:
+        self.f3_switch = ctk.CTkSwitch(self.f31, text="Dark/Light", command=self.set_appearance_mode, onvalue="dark", offvalue="light")
+        self.f3_switch.grid(row=0, column=0, padx=(5, 20), pady=(5, 5))
 
-            self.f3 = ctk.CTkFrame(self, fg_color="transparent")
-            self.f3.grid(row=1, column=1, padx=(5, 5), pady=(0, 5), sticky="se")
+        self.f3_bt_2 = ctk.CTkButton(self.f31, width=75, height=20, text="Exit", command=self.exit)
+        self.f3_bt_2.grid(row=0, column=1, padx=(20, 5), pady=(5, 5))
 
-            self.f31 = ctk.CTkFrame(self.f3, fg_color="transparent")
-            self.f31.grid(row=0, column=0, padx=(5, 5), pady=(0, 0))
-
-            self.f3_switch = ctk.CTkSwitch(self.f31, text="Dark/Light", command=self.set_appearance_mode, onvalue="dark", offvalue="light")
-            self.f3_switch.grid(row=0, column=0, padx=(5, 20), pady=(5, 5))
-
-            self.f3_bt_2 = ctk.CTkButton(self.f31, width=75, height=20, text="Exit", command=self.exit)
-            self.f3_bt_2.grid(row=0, column=1, padx=(20, 5), pady=(5, 5))
-
-# endregion
-
-# region DEVICE setup
-
-        if self.using_nidaq is True:
-
-            self.nidaq = NidaqHandle(nidaq_device, nidaq_ao_port, nidaq_ai_port)
-            self.nidaq_lower = self.nidaq.lower_limit
-            self.nidaq_upper = self.nidaq.upper_limit
-            self.nidaq_init()
-
-        if self.using_kcube is True:
-
-            self.kcube = KcubeHandle(str(int(kcube_serial_number)))
-            self.kcube_cb_objective.set(last_selected)
-            self.kcube_position = FILEIO.read_value(self.config_path, last_selected)
-
-            self.kcube.stage_enabled = True
-            self.kcube_bt_enable.configure(fg_color='green', text='enabled')
-            self.kcube_lb_position.configure(text=str(self.kcube_position))
-            self.kcube_sldr.set(float(self.kcube_position))
-
-        if self.using_nkt is True:
-
-            self.nkt = NktHandle(nkt_device)
-
-
-# endregion
 
 # region MIPOS related commands
 
@@ -486,7 +446,7 @@ class mOCT_CTRL(ctk.CTk):
         self.kcube_bt_home.configure(fg_color='darkred', text='homing')
         self.kcube.home()
         self.kcube_bt_home.configure(fg_color='green', text='homed')
-        self.kcube_position = self.kcube.get_position()
+        self.kcube_position = float(self.kcube.get_position())
         self.kcube_lb_position.configure(text=f"{self.kcube_position:.2f}")
 
     def kcube_check_limit(self, value) -> float:
@@ -554,6 +514,7 @@ class mOCT_CTRL(ctk.CTk):
     def kcube_on_mouse_up(self, event) -> None:
         ''' kcube slider mouse up event '''
 
+        self.kcube_position = self.kcube_sldr.get()
         self.kcube.set_position(self.kcube_position)
         self.kcube_lb_position.configure(text=f"{self.kcube_position:.2f}")
 
@@ -696,12 +657,19 @@ class mOCT_CTRL(ctk.CTk):
 
             self.kcube.disconnect()
 
+        if self.using_nkt is True:
+
+            self.nkt.set_emission(False)
+            self.nkt_emission_state = False
+            self.nkt_bt_laser.configure(fg_color='#3a7ebf')
+            print("Set emission off")
+
         self.quit()
 
 # endregion
 
 
-app = mOCT_CTRL()
+app = App()
 
 app.iconbitmap("internal\\logo.ico")
 icon = tk.PhotoImage(file="internal\\logo.png")
