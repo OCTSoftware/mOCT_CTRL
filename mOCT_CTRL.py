@@ -23,7 +23,7 @@ class mOCT_CTRL(ctk.CTk):
     # m.ahrens@uni-luebeck.de
 
 
-    config_path = str(Path.cwd()) + "\\_internal\\" + "config.txt"
+    config_path = str(Path.cwd()) + "\\internal\\" + "config.txt"
 
     using_kcube = CheckConfig.load_variables(config_path, 'using_kcube')
     using_nidaq = CheckConfig.load_variables(config_path, 'using_nidaq')
@@ -90,7 +90,7 @@ class mOCT_CTRL(ctk.CTk):
             self.nidaq_lb = ctk.CTkLabel(self.nidaq_f01, width=75, height=20, font=("Cosmic Sans MS", 18, "normal"), text="MIPOS")
             self.nidaq_lb.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
 
-            image = Image.open("_internal/focus.png")
+            image = Image.open("internal/focus.png")
             ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(40, 40))
             self.label = ctk.CTkLabel(self.nidaq_f01, image=ctk_image, text="")
             self.label.grid(row=0, column=1, padx=(0, 0), pady=(0, 0))
@@ -156,7 +156,7 @@ class mOCT_CTRL(ctk.CTk):
             self.kcube_lb = ctk.CTkLabel(self.kcube_f01, width=75, height=20, font=("Cosmic Sans MS", 18, "normal"), text="KINESIS")
             self.kcube_lb.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
 
-            image = Image.open("_internal/zref.png")
+            image = Image.open("internal/zref.png")
             ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(40, 40))
             self.label = ctk.CTkLabel(self.kcube_f01, image=ctk_image, text="")
             self.label.grid(row=0, column=1, padx=(0, 40), pady=(0, 0))
@@ -243,7 +243,7 @@ class mOCT_CTRL(ctk.CTk):
             self.nkt_lb = ctk.CTkLabel(self.nkt_f01, width=75, height=20, font=("Cosmic Sans MS", 18, "normal"), text="NKT")
             self.nkt_lb.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
 
-            image = Image.open("_internal/laser.png")
+            image = Image.open("internal/laser.png")
             ctk_image = ctk.CTkImage(light_image=image, dark_image=image, size=(40, 40))
             self.label = ctk.CTkLabel(self.nkt_f01, image=ctk_image, text="")
             self.label.grid(row=0, column=1, padx=(0, 0), pady=(0, 0))
@@ -703,8 +703,8 @@ class mOCT_CTRL(ctk.CTk):
 
 app = mOCT_CTRL()
 
-app.iconbitmap("_internal\\logo.ico")
-icon = tk.PhotoImage(file="_internal\\logo.png")
+app.iconbitmap("internal\\logo.ico")
+icon = tk.PhotoImage(file="internal\\logo.png")
 app.wm_iconphoto(False, icon)
 
 menu_bar = tk.Menu(app)

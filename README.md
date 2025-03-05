@@ -1,6 +1,8 @@
-# mOCT_CTRL
+# mOCT_CTRL v1.2
 
 Control software for the focus piezo and reference stage.
+
+The software is hosted on Github at https://github.com/OCTSoftware/mOCT_CTRL/
 
 ## Installation
 
@@ -45,13 +47,13 @@ True or False
 
 **NIDAQ board device and ports**
 
-> NIDAQ_DEVICE = Dev2 \
+> NIDAQ_DEVICE = Dev<strong>**\***</strong> \
 > NIDAQ_AO_PORT = ao0 \
 > NIDAQ_AI_PORT = ai0
 
 **Thorlabs KCube serial number**
 
-> KCUBE_SN = 28252775
+> KCUBE_SN = 28<strong>**\*\*\*\*\*\***</strong>
 
 **StepSize**
 
@@ -59,7 +61,7 @@ True or False
 
 **Slider position for dedicated microscope objective lenses**
 
-> zero  =  0.0 \
+> zero = 0.0 \
 > 05x16 = 10.0 \
 > 10x03 = 20.0 \
 > 20x05 = 30.0 \
@@ -67,10 +69,12 @@ True or False
 
 **NKT**
 
-> NKT_DEVICE = COM1
+> NKT_DEVICE = COM<strong>**\***</strong>
 
+## Using the GUI
 
-## Screenshot from the GUI
+The program saves and loads automatecally the position of the reference stage and of the dedicated microscope objective lens.
+The Parameter are saved in the 'config.txt' in the subfolder 'internal/'.
 
 ![Screenshot from the GUI](GUI.png)
 
