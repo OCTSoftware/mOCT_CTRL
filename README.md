@@ -2,26 +2,38 @@
 
 Control software for the focus piezo and reference stage.
 
-The software is hosted on Github at https://github.com/OCTSoftware/mOCT_CTRL/
+The software is hosted on Github at <https://github.com/OCTSoftware/mOCT_CTRL/>
 
-## Installation
+## Table of Contents
 
-- Install **Visual Studio Code** (https://code.visualstudio.com/download)
-- Install **Python 3.12** (https://www.python.org/downloads/release/python-3120/)
+[1 .Introduction](#1-introduction) \
+[2. Installation](#2-installation) \
+[3. Configuration](#3-configuration) \
+[4. GUI](#4-gui) \
+[5. Changelog](#5-changelog)
+
+## 1. Introduction
+
+Start ans save
+
+## 2. Installation
+
+- Install **Visual Studio Code** (<https://code.visualstudio.com/download>)
+- Install **Python 3.12** (<https://www.python.org/downloads/release/python-3120/>)
   - Windows installer (64-bit)
   - Check "Use admin privileges when installing py.exe"
   - Check "Add python.exe to PATH
   - Customize installation
   - Check "Install Python 3.12 for all users"
   - Check "Disable path length limit" at the end of the installation
-- Download the mOCT_CTRL software from https://github.com/OCTSoftware/mOCT_CTRL/releases/tag/Release (zip file)
+- Download the mOCT_CTRL software from <https://github.com/OCTSoftware/mOCT_CTRL/releases/tag/Release> (zip file)
 - Unzip files (and folders) to C:\mOCT\mOCT_CTRL
 
 - Open Visual Studio Code
 - Under Extensions (left site) enter **Python Extension Pack** and install it
 
 - File -> Open folder ----> C:\mOCT\mOCT_CTRL
-- Check "Yes trust this author" ;)
+- Check "Yes trust this author"
 - Terminal -> New terminal
 - Run "pip install -r .\requirements.txt"
 
@@ -33,7 +45,7 @@ The software is hosted on Github at https://github.com/OCTSoftware/mOCT_CTRL/
 
 - Click on the run button (right / top in "Visual Studio Code"
 
-## Configuration
+## 3. Configuration
 
 All settings are made in Config.txt **before** the program starts.
 
@@ -45,21 +57,21 @@ True or False
 > USING_KCUBE = True \
 > USING_NKT = True
 
-**NIDAQ board device and ports**
+#### NIDAQ board device and ports
 
 > NIDAQ_DEVICE = Dev<strong>**\***</strong> \
 > NIDAQ_AO_PORT = ao0 \
 > NIDAQ_AI_PORT = ai0
 
-**Thorlabs KCube serial number**
+#### Thorlabs KCube serial number
 
 > KCUBE_SN = 28<strong>**\*\*\*\*\*\***</strong>
 
-**StepSize**
+#### StepSize
 
 > KCUBE_STEPSIZE = 0.1
 
-**Slider position for dedicated microscope objective lenses**
+#### Slider position for dedicated microscope objective lenses
 
 > zero = 0.0 \
 > 05x16 = 10.0 \
@@ -67,15 +79,23 @@ True or False
 > 20x05 = 30.0 \
 > 40x08 = 40.0
 
-**NKT**
+#### NKT
 
 > NKT_DEVICE = COM<strong>**\***</strong>
 
-## Using the GUI
+## 4. GUI
 
 The program saves and loads automatecally the position of the reference stage and of the dedicated microscope objective lens.
 The Parameter are saved in the 'config.txt' in the subfolder 'internal/'.
 
 ![Screenshot from the GUI](GUI.png)
 
-https://stackoverflow.com/questions/71226142/pyinstaller-with-nidaqmx
+<https://stackoverflow.com/questions/71226142/pyinstaller-with-nidaqmx>
+
+## Changelog
+
+### v 1.0
+
+### v 1.1
+
+### v 1.2

@@ -1,9 +1,9 @@
 ####################################  CFG  ####################################
 
 # Select devices
-using_kcube = True
-using_nidaq = True
-using_nkt = True
+using_kcube = False
+using_nidaq = False
+using_nkt = False
 using_gui_control = True       # ALWAYS TRUE !!!
 
 #################################### MIPOS ####################################

@@ -1,6 +1,7 @@
 ''' mOCT_CTRL.py '''
 
 
+import os
 import time
 import pathlib
 from pathlib import Path
@@ -625,6 +626,12 @@ class App(ctk.CTk):
             ctk.set_appearance_mode("light")
             self.appearance_mode = "light"
 
+    def help(self) -> None:
+        ''' help'''
+
+        pdf_path = "README.pdf"
+        os.startfile(pdf_path)
+
     def info(self) -> None:
         ''' info'''
 
@@ -679,6 +686,7 @@ menu_bar = tk.Menu(app)
 file_menu = tk.Menu(menu_bar, tearoff=0)
 
 menu_bar.add_cascade(label="File", menu=file_menu)
+file_menu.add_command(label="Help", command=app.help)
 file_menu.add_command(label="Info", command=app.info)
 file_menu.add_command(label="Exit", command=app.exit)
 
