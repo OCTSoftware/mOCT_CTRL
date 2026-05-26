@@ -878,33 +878,5 @@ class App(ctk.CTk):
 
 
 app = App()
-<<<<<<< HEAD
-=======
 
-app.iconbitmap("internal\\logo.ico")
-icon = tk.PhotoImage(file="internal\\logo.png")
-app.wm_iconphoto(False, icon)
-
-menu_bar = tk.Menu(app)
-file_menu = tk.Menu(menu_bar, tearoff=0)
-
-menu_bar.add_cascade(label="File", menu=file_menu)
-file_menu.add_command(label="Help", command=app.help)
-file_menu.add_command(label="Info", command=app.info)
-file_menu.add_command(label="Exit", command=app.exit)
-
-option_menu = tk.Menu(menu_bar, tearoff=0)
-
-menu_bar.add_cascade(label="Options", menu=option_menu)
-
-option_menu.add_checkbutton(label="MIPOS", command=app.using_nidaq)
-option_menu.add_checkbutton(label="KINESIS", command=app.using_kcube)
-option_menu.add_checkbutton(label="NKT", command=app.using_nkt)
-
-app.config(menu=menu_bar)
-
-app.protocol("WM_DELETE_WINDOW", app.exit)
-app.resizable(False, False)
-
->>>>>>> e71ed402ffb4d26d6dbceb2af0512a980dcfe1ea
 app.mainloop()
