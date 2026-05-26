@@ -30,9 +30,15 @@ class KcubeHandle:
 
 # -----------------------------------------------------------------------------
     def __init__(self, serial_no: str) -> None:
-        '''
+        """
         Initialize instance: load DLLs and connect to KCube
-        '''
+
+        Args:
+            serial_no (str): Serial number of the KINESIS stage
+        
+        Returns:
+            KcubeHandle
+        """
 
         DeviceManagerCLI.BuildDeviceList()
         self.serial_no = serial_no
@@ -66,9 +72,15 @@ class KcubeHandle:
 
 # -----------------------------------------------------------------------------
     def home(self) -> None:
-        '''
+        """
         Set home position.
-        '''
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
 
         self.kcube.Home(60000)  # 60 second timeout
         if __DEBUG__:
@@ -76,32 +88,57 @@ class KcubeHandle:
 
 # -----------------------------------------------------------------------------
     def set_position(self, value: float) -> None:
-        '''
+        """
         Move the stage to a certain position.
-        '''
 
+        Args:
+            value (float): Move to absolut position in mm
+
+        Returns:
+            None
+        """
+
+        if __DEBUG__:
+            print(f"KCube position is {float(value):.2f}")
+    
         value = Decimal(value)
         self.kcube.MoveTo(value, 60000)
-        if __DEBUG__:
-            print(f"KCube position is {value:.2f}")
 
 # -----------------------------------------------------------------------------
     def get_position(self) -> float:
-        '''
+        """
         Move the stage to a certain position.
-        '''
 
-        value = self.kcube.get_Position()
+        Args:
+            None
+
+        Returns:
+            position (float): Returns the position in mm 
+        """
+
+        value = float((str(self.kcube.get_Position())).replace(",", "."))   # gets decimal values !!!
+
         if __DEBUG__:
             print(f"KCube position is {value:.2f}")
 
-        return float(value)
+        position = float(value)
+        return position
 
 # -----------------------------------------------------------------------------
     def set_velocity_params(self, velocity_key: str = "medium") -> None:
-        '''
+        """
         Change the preset Kcube velocity parameters.
-        '''
+
+        Args:
+            velocity_key (str): Speed of the stage, options arr
+                - slow
+                - medium
+                - fast
+                - slider_control
+
+        Returns:
+            None
+        """
 
         match velocity_key:
             case "slow":            # for small and slow movement
@@ -120,9 +157,11 @@ class KcubeHandle:
 
 # -----------------------------------------------------------------------------
     def enable(self) -> None:
-        '''
+        """
         Enable / disable  KCube
-        '''
+
+        Just toggle the state
+        """
 
         if self.stage_enabled is True:
             self.kcube.DisableDevice()
@@ -136,9 +175,9 @@ class KcubeHandle:
 
 # -----------------------------------------------------------------------------
     def disconnect(self) -> None:
-        '''
+        """
         Stop polling, disable and disconnect the device.
-        '''
+        """
 
         self.kcube.StopPolling()
         self.kcube.DisableDevice()

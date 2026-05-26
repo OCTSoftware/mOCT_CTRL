@@ -4,7 +4,7 @@
 class CheckConfig:
     ''' CheckCOnfig'''
 
-    def __init__(Self) -> None:
+    def __init__(self) -> None:
         ''' __init__ '''
 
         pass

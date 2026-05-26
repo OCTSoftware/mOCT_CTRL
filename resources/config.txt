@@ -4,7 +4,6 @@
 using_kcube = True
 using_nidaq = True
 using_nkt = True
-using_gui_control = True       # ALWAYS TRUE !!!
 
 #################################### MIPOS ####################################
 
@@ -12,8 +11,9 @@ using_gui_control = True       # ALWAYS TRUE !!!
 nidaq_device = Dev1
 nidaq_ao_port = ao0
 nidaq_ai_port = ai0
-
-nidaq_position = 20.83
+nidaq_min_out = 0.0
+nidaq_max_out = 5.0
+nidaq_position = 200.0
 
 #################################### KCUBE ####################################
 
@@ -21,13 +21,13 @@ nidaq_position = 20.83
 kcube_serial_number = 28250442
 
 # Slider position for dedicated microscope objective lenses
-home = 0.00
+home = 10.0
 05x16 = 22.43
-10x03 = 28.94
-20x05 = 0.0
+10x03 = 30.61
+20x05 = 34.0
 40x08 = 0.0
 
-last_selected = 05x16
+last_selected = 10x03
 kcube_stepsize = 3.0
 
 ####################################  NKT  ####################################
