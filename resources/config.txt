@@ -1,9 +1,16 @@
 ####################################  CFG  ####################################
 
 # Select devices
+<<<<<<< HEAD:resources/config.txt
 using_kcube = True
 using_nidaq = True
 using_nkt = True
+=======
+using_kcube = False
+using_nidaq = False
+using_nkt = False
+using_gui_control = True       # ALWAYS TRUE !!!
+>>>>>>> e71ed402ffb4d26d6dbceb2af0512a980dcfe1ea:internal/config.txt
 
 #################################### MIPOS ####################################
 
