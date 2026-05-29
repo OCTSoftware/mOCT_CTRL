@@ -128,7 +128,7 @@ class StepperDriver:
     def send_jog_speed(self, axis: str, speed: float, wait_response: bool = False):
         """Send jog speed command."""
 
-        cmd = f"JOGSPD {axis} {speed:.1f}"
+        cmd = f"JOG {axis} {speed:.1f}"
         self.send_cmd(cmd, wait_response=wait_response)
 
     # -------------------------------------------------------------------------
@@ -239,7 +239,6 @@ class StepperDriver:
                 if line:
 
                     print("READER:", line)
-                    print("CALLBACK:", self.status_callback)
 
                     self.status.parse(line)
 
