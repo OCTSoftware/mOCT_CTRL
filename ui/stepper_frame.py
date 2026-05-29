@@ -13,6 +13,9 @@ class StepperFrame(ctk.CTkFrame):
         super().__init__(parent)
 
         self.stepper = stepper
+        print(type(self.stepper))
+        self.stepper.status_callback = self.update_status
+        print("CALLBACK SET:", self.stepper.status_callback)
         self.config = config
         
         self.stepper_names = ["X", "Y"]
@@ -88,33 +91,68 @@ class StepperFrame(ctk.CTkFrame):
 
             ctk.CTkLabel(frame, text=name, font=("Arial", 16, "bold")).pack(padx=5, pady=(5, 10))
 
-            info_label = ctk.CTkLabel(frame, text="Ready")
-            info_label.pack(padx=5, pady=2)
+            state_label = ctk.CTkLabel(frame, text="State: ---")
+            state_label.pack(padx=5, pady=2)
 
-            position_label = ctk.CTkLabel(frame, text="Position: 0")
+            position_label = ctk.CTkLabel(frame, text="Pos: ---")
             position_label.pack(padx=5, pady=2)
+
+            limit_label = ctk.CTkLabel(frame, text="Home:- End:-")
+            limit_label.pack(padx=5, pady=2)
 
             speed_var = tk.StringVar(value="100")
             speed_entry = ctk.CTkEntry(frame, textvariable=speed_var, width=120)
             speed_entry.pack(padx=5, pady=2)
             speed_entry.bind("<Return>", lambda event: self.send_command())
 
-            jog_pos_btn = ctk.CTkButton(frame, text="Jog +", command=lambda n=name: self.jog_positive(n))
+            jog_pos_btn = ctk.CTkButton(frame, text="Jog +", command=lambda n=name: self.jog_positive(name))
             jog_pos_btn.pack(padx=5, pady=2)
 
-            jog_neg_btn = ctk.CTkButton(frame, text="Jog -", command=lambda n=name: self.jog_negative(n))
+            jog_neg_btn = ctk.CTkButton(frame, text="Jog -", command=lambda n=name: self.jog_negative(name))
             jog_neg_btn.pack(padx=5, pady=2)
-
-            limit_label = ctk.CTkLabel(frame, text="Limits: ---")
-            limit_label.pack(padx=5, pady=2)
 
             self.stepper_widgets[name] = {
                 "frame": frame,
+                "state_label": state_label,
                 "position_label": position_label,
-                "speed_var": speed_var,
                 "limit_label": limit_label,
-                "info_label": info_label,
+                "speed_var": speed_var
             }
+
+    # ------------------------------------------------------------------
+    def update_status(self, status):
+
+        self.after(
+            0,
+            lambda: self._update_widgets(status)
+        )
+
+    # ------------------------------------------------------------------
+    def _update_widgets(self, status):
+
+        self.stepper_widgets["X"]["position_label"].configure(
+            text=f"Pos: {status.x.position}"
+        )
+
+        self.stepper_widgets["Y"]["position_label"].configure(
+            text=f"Pos: {status.y.position}"
+        )
+
+        self.stepper_widgets["X"]["state_label"].configure(
+            text=f"State: {status.STATE_MAP.get(status.x.state, '?')}"
+        )
+
+        self.stepper_widgets["Y"]["state_label"].configure(
+            text=f"State: {status.STATE_MAP.get(status.y.state, '?')}"
+        )
+
+        self.stepper_widgets["X"]["limit_label"].configure(
+            text=f"Home:{int(status.x.home)} End:{int(status.x.end)}"
+        )
+
+        self.stepper_widgets["Y"]["limit_label"].configure(
+            text=f"Home:{int(status.y.home)} End:{int(status.y.end)}"
+        )
 
     # ------------------------------------------------------------------
     def get_ports(self):
@@ -163,22 +201,24 @@ class StepperFrame(ctk.CTkFrame):
         self.log("Disconnected")
 
     # ------------------------------------------------------------------
-    def jog_positive(self):
+    def jog_positive(self, axis):
 
-        axis = self.axis_var.get()
-        speed = float(self.speed_var.get())
+        speed = float(
+            self.stepper_widgets[axis]["speed_var"].get()
+        )
 
         self.stepper.send_jog_speed(axis, speed)
 
         self.log(f"Jog + {axis} {speed}")
 
     # ------------------------------------------------------------------
-    def jog_negative(self):
+    def jog_negative(self, axis):
 
-        axis = self.axis_var.get()
-        speed = -float(self.speed_var.get())
+        speed = float(
+            self.stepper_widgets[axis]["speed_var"].get()
+        )
 
-        self.stepper.send_jog_speed(axis, speed)
+        self.stepper.send_jog_speed(axis, -speed)
 
         self.log(f"Jog - {axis} {speed}")
 

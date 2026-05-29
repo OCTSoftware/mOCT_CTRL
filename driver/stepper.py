@@ -5,6 +5,7 @@ Controller wrapper for the serial stepper driver.
 """
 
 from driver.stepper import StepperDriver
+from models.stepper_status import StepperStatus
 
 
 class StepperController:
@@ -14,6 +15,13 @@ class StepperController:
 
         self.config = config
         self.state = state
+        
+        self.reader_thread = None
+        self.status = StepperStatus()
+        
+        print("CALLBACK:", self.status_callback)
+        
+        self.status_callback = None
 
         self.driver = StepperDriver(
             callbacks={
