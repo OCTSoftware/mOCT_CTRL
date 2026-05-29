@@ -4,6 +4,8 @@ import customtkinter as ctk
 import tkinter as tk
 import serial.tools.list_ports
 
+from utils.led import led
+
 
 class StepperFrame(ctk.CTkFrame):
 
@@ -97,8 +99,35 @@ class StepperFrame(ctk.CTkFrame):
             position_label = ctk.CTkLabel(frame, text="Pos: ---")
             position_label.pack(padx=5, pady=2)
 
-            limit_label = ctk.CTkLabel(frame, text="Home:- End:-")
-            limit_label.pack(padx=5, pady=2)
+            limit_frame = ctk.CTkFrame(
+                frame,
+                fg_color="transparent"
+            )
+            limit_frame.pack(padx=5, pady=2)
+
+            ctk.CTkLabel(
+                limit_frame,
+                text="Home"
+            ).grid(row=0, column=0, padx=2)
+
+            home_led = led(
+                limit_frame,
+                size=14,
+                color_on="green"
+            )
+            home_led.grid(row=0, column=1, padx=2)
+
+            ctk.CTkLabel(
+                limit_frame,
+                text="End"
+            ).grid(row=0, column=2, padx=(10, 2))
+
+            end_led = led(
+                limit_frame,
+                size=14,
+                color_on="red"
+            )
+            end_led.grid(row=0, column=3, padx=2)
 
             speed_var = tk.StringVar(value="100")
             speed_entry = ctk.CTkEntry(frame, textvariable=speed_var, width=120)
@@ -115,7 +144,8 @@ class StepperFrame(ctk.CTkFrame):
                 "frame": frame,
                 "state_label": state_label,
                 "position_label": position_label,
-                "limit_label": limit_label,
+                "home_led": home_led,
+                "end_led": end_led,
                 "speed_var": speed_var
             }
 
@@ -146,13 +176,26 @@ class StepperFrame(ctk.CTkFrame):
             text=f"State: {status.STATE_MAP.get(status.y.state, '?')}"
         )
 
-        self.stepper_widgets["X"]["limit_label"].configure(
-            text=f"Home:{int(status.x.home)} End:{int(status.x.end)}"
-        )
+        if status.x.home:
+            self.stepper_widgets["X"]["home_led"].on()
+        else:
+            self.stepper_widgets["X"]["home_led"].off()
 
-        self.stepper_widgets["Y"]["limit_label"].configure(
-            text=f"Home:{int(status.y.home)} End:{int(status.y.end)}"
-        )
+        if status.x.end:
+            self.stepper_widgets["X"]["end_led"].on()
+        else:
+            self.stepper_widgets["X"]["end_led"].off()
+
+
+        if status.y.home:
+            self.stepper_widgets["Y"]["home_led"].on()
+        else:
+            self.stepper_widgets["Y"]["home_led"].off()
+
+        if status.y.end:
+            self.stepper_widgets["Y"]["end_led"].on()
+        else:
+            self.stepper_widgets["Y"]["end_led"].off()
 
     # ------------------------------------------------------------------
     def get_ports(self):
