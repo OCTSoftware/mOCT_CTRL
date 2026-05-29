@@ -39,8 +39,8 @@ nkt_device = COM2
 
 
 ##################################  STEPPER ###################################
-STEPPER_PORT=COM3
-STEPPER_BAUDRATE=115200
-STEPPER_CONNECTED=False
-STEPPER_STATE=-
-STEPPER_LIMITS=
+stepper_port=COM3
+stepper_baudrate=115200
+stepper_connected=False
+stepper_state=
+stepper_limits=200000

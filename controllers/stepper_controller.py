@@ -90,13 +90,17 @@ class StepperDriver:
     def disconnect(self):
         """Disconnect serial port."""
 
-        if self.is_connected and self.ser and self.ser.is_open:
+        self.is_connected = False
+
+        if self.reader_thread and self.reader_thread.is_alive():
+            self.reader_thread.join(timeout=1.0)
+
+        if self.ser and self.ser.is_open:
             self.ser.close()
 
-        self.is_connected = False
         self.ser = None
 
-        self._log("Disconnected", "warn")
+        print("[STEPPER] Disconnected")
 
     # -------------------------------------------------------------------------
     def send_cmd(self, cmd: str, wait_response: bool = False):
@@ -115,12 +119,7 @@ class StepperDriver:
             sent_event.wait(timeout=1.0)
 
     # -------------------------------------------------------------------------
-    def send_jog_speed(
-        self,
-        axis: str,
-        speed: float,
-        wait_response: bool = False,
-    ):
+    def send_jog_speed(self, axis: str, speed: float, wait_response: bool = False):
         """Send jog speed command."""
 
         cmd = f"JOG {axis} {speed:.1f}"
@@ -213,10 +212,13 @@ class StepperDriver:
         """Continuously read serial responses."""
 
         while self.is_connected and self.ser:
+            
             try:
+                if self.ser is None:
+                    break
+
                 if not self.ser.is_open:
-                    time.sleep(0.1)
-                    continue
+                    break
 
                 line = (
                     self.ser.readline()
@@ -228,14 +230,19 @@ class StepperDriver:
                     self._status_update(line)
                     self._process_response(line)
 
-            except (serial.SerialException, OSError) as exc:
+            except (
+                serial.SerialException,
+                OSError,
+                AttributeError,
+                TypeError,
+            ) as exc:
+
                 if self.is_connected:
-                    self._error["error"](
+                    self._error(
                         f"Serial read error: {exc}"
                     )
 
-                time.sleep(0.01)
-                continue
+                break
 
     # -------------------------------------------------------------------------
     def _process_response(self, line: str):

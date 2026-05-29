@@ -79,7 +79,7 @@ def create_app():
 
     def on_close():
 
-        CONFIG_IO.save_runtime_config(app, config)
+        CONFIG_IO.save_runtime_config(app, config.path)
 
         safe_shutdown()
 
