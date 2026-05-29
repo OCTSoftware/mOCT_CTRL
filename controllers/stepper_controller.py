@@ -205,8 +205,6 @@ class StepperDriver:
     # -------------------------------------------------------------------------
     def _start_reader(self):
         """Start serial reader thread."""
-        
-        print("THREAD CREATED")
 
         self.reader_thread = threading.Thread(
             target=self._reader_loop,
@@ -218,8 +216,6 @@ class StepperDriver:
     # -------------------------------------------------------------------------
     def _reader_loop(self):
         """Continuously read serial responses."""
-        
-        print("READER THREAD STARTED")
 
         while self.is_connected and self.ser:
             
