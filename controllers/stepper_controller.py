@@ -12,6 +12,8 @@ from typing import Callable, Dict, Optional
 
 import serial
 
+from models.stepper_status import StepperStatus
+
 
 class StepperDriver:
     """
@@ -39,6 +41,10 @@ class StepperDriver:
         self.limits = ""
 
         self.reader_thread: Optional[threading.Thread] = None
+        
+        self.status = StepperStatus()
+
+        self.status_callback = None
 
         # Queue for serialized command handling
         self._cmd_queue = queue.Queue()
@@ -83,7 +89,7 @@ class StepperDriver:
             return True
 
         except (serial.SerialException, OSError) as exc:
-            self._error["error"](f"Connect error: {exc}")
+            self._error(f"Connect error: {exc}")
             return False
 
     # -------------------------------------------------------------------------
@@ -122,7 +128,7 @@ class StepperDriver:
     def send_jog_speed(self, axis: str, speed: float, wait_response: bool = False):
         """Send jog speed command."""
 
-        cmd = f"JOG {axis} {speed:.1f}"
+        cmd = f"JOGSPD {axis} {speed:.1f}"
         self.send_cmd(cmd, wait_response=wait_response)
 
     # -------------------------------------------------------------------------
@@ -155,7 +161,7 @@ class StepperDriver:
             serial.SerialException,
             OSError,
         ) as exc:
-            self._error["error"](f"Serial write error: {exc}")
+            self._error(f"Serial write error: {exc}")
 
     # -------------------------------------------------------------------------
     def _process_queue(self):
@@ -199,6 +205,8 @@ class StepperDriver:
     # -------------------------------------------------------------------------
     def _start_reader(self):
         """Start serial reader thread."""
+        
+        print("THREAD CREATED")
 
         self.reader_thread = threading.Thread(
             target=self._reader_loop,
@@ -210,6 +218,8 @@ class StepperDriver:
     # -------------------------------------------------------------------------
     def _reader_loop(self):
         """Continuously read serial responses."""
+        
+        print("READER THREAD STARTED")
 
         while self.is_connected and self.ser:
             
@@ -227,7 +237,15 @@ class StepperDriver:
                 )
 
                 if line:
-                    self._status_update(line)
+
+                    print("READER:", line)
+                    print("CALLBACK:", self.status_callback)
+
+                    self.status.parse(line)
+
+                    if self.status_callback:
+                        self.status_callback(self.status)
+
                     self._process_response(line)
 
             except (
