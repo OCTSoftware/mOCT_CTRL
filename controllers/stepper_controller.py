@@ -28,7 +28,7 @@ class StepperDriver:
     # -------------------------------------------------------------------------
     def __init__(self, config, state):
         """Initialize driver."""
-
+        
         self.config = config
         self.state = state
 
@@ -225,7 +225,7 @@ class StepperDriver:
                 )
 
                 if line:
-                    self._error["status_update"](line)
+                    self._status_update(line)
                     self._process_response(line)
 
             except (serial.SerialException, OSError) as exc:
@@ -260,11 +260,11 @@ class StepperDriver:
 
         elif parts[0] == "LIM":
             self.limits = line
-            self._status_update["status_update"](line)
+            self._status_update(line)
 
         elif parts[0] == "STATUS":
             self.sys_state = line
-            self._status_update["status_update"](line)
+            self._status_update(line)
 
         else:
             self._log(

@@ -1,10 +1,13 @@
 ####################################  CFG  ####################################
 
 # Select devices
-using_kcube=True
-using_nidaq=True
 using_nkt=False
-sync_stages=True
+using_kcube=False
+using_nidaq=True
+using_stepper=True
+using_sync=False
+using_record=False
+
 
 #################################### MIPOS ####################################
 
