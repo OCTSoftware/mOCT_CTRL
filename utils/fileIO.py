@@ -9,42 +9,59 @@ m.ahrens@uni-luebeck.de
 
 class FILEIO:
 
+    @staticmethod
     def read_value(filename, test_name):
         try:
-            with open(filename, 'r') as file:
+            with open(filename, "r", encoding="utf-8") as file:
                 for line in file:
-                    if line.startswith(test_name):
-                        # Split the line by '=' and return the float value
-                        return line.split('=')[1].strip()
+                    line = line.strip()
+
+                    if not line or line.startswith("#"):
+                        continue
+
+                    if "=" not in line:
+                        continue
+
+                    key, value = line.split("=", 1)
+
+                    if key.strip() == test_name:
+                        return value.strip()
+
         except FileNotFoundError:
             print(f"File {filename} not found.")
             return None
-        except ValueError:
-            print(f"Error in value format for {test_name}.")
+
+        except OSError as exc:
+            print(f"Error reading {filename}: {exc}")
             return None
 
+        return None
+
+    @staticmethod
     def write_value(filename, test_name, value):
         lines = []
         found = False
 
-        # Read all lines and check if the test_name already exists
         try:
-            with open(filename, 'r') as file:
+            with open(filename, "r", encoding="utf-8") as file:
                 lines = file.readlines()
 
-            with open(filename, 'w') as file:
-                for line in lines:
-                    if line.startswith(test_name):
+        except FileNotFoundError:
+            pass
+
+        with open(filename, "w", encoding="utf-8") as file:
+            for line in lines:
+                stripped = line.strip()
+
+                if "=" in stripped:
+                    key = stripped.split("=", 1)[0].strip()
+
+                    if key == test_name:
                         file.write(f"{test_name} = {value}\n")
                         found = True
-                    else:
-                        file.write(line)
+                        continue
 
-                # If the test_name is not found, add it at the end
-                if not found:
-                    file.write(f"{test_name} = {value}\n")
-                    
-        except FileNotFoundError:
-            with open(filename, 'w') as file:
+                file.write(line)
+
+            if not found:
                 file.write(f"{test_name} = {value}\n")
-                print(f"File {filename} not found, creating a new one.")
