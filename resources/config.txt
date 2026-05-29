@@ -3,7 +3,7 @@
 # Select devices
 using_kcube=True
 using_nidaq=True
-using_nkt=True
+using_nkt=False
 sync_stages=True
 
 #################################### MIPOS ####################################
@@ -19,7 +19,7 @@ nidaq_position = 200
 #################################### KCUBE ####################################
 
 # Thorlabs KCube serial number
-kcube_serial_number = 28253059
+kcube_serial_number = 28252775
 # Slider position for dedicated microscope objective lenses
 home = 10.0
 05x16 = 22.43
@@ -32,7 +32,7 @@ kcube_stepsize = 3.0
 
 ####################################  NKT  ####################################
 
-nkt_device = COM3
+nkt_device = COM2
 
 
 ##################################  STEPPER ###################################
