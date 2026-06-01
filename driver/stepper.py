@@ -15,13 +15,13 @@ class StepperController:
 
         self.config = config
         self.state = state
-        
+
         self.reader_thread = None
         self.status = StepperStatus()
-        
+
         self.status_callback = None
         print("CALLBACK:", self.status_callback)
-        
+
         self.driver = StepperDriver(
             callbacks={
                 "log": self._log,

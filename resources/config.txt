@@ -61,3 +61,17 @@ stepper_baudrate=115200
 stepper_connected=False
 stepper_state=
 stepper_limits=200000
+
+
+########################  STEPPER - MIPOS SYNC  ################################
+
+sync_enabled = true
+
+sync1_axis = X
+sync1_nidaq = 1
+
+sync2_axis = Y
+sync2_nidaq = 2
+
+sync_scale = 1.0
+sync_offset = 0.0

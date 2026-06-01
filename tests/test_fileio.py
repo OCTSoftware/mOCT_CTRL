@@ -3,10 +3,7 @@ from utils.fileIO import FILEIO
 
 def test_read_exact_match(tmp_path):
     cfg = tmp_path / "cfg.txt"
-    cfg.write_text(
-        "laser_power=10\n"
-        "laser_power_max=100\n"
-    )
+    cfg.write_text("laser_power=10\nlaser_power_max=100\n")
 
     result = FILEIO.read_value(str(cfg), "laser_power")
 
@@ -24,10 +21,7 @@ def test_read_ignores_prefix_match(tmp_path):
 
 def test_read_skips_malformed_lines(tmp_path):
     cfg = tmp_path / "cfg.txt"
-    cfg.write_text(
-        "brokenline\n"
-        "foo=bar\n"
-    )
+    cfg.write_text("brokenline\nfoo=bar\n")
 
     result = FILEIO.read_value(str(cfg), "foo")
 

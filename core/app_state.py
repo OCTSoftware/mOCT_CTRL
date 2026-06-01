@@ -1,4 +1,3 @@
-
 class AppState:
     def __init__(self):
         self.nidaq_position = 0.0
@@ -6,4 +5,3 @@ class AppState:
         self.nkt_power = 100.0
         self.laser_enabled = False
         self.sync_enabled = False
-

@@ -31,16 +31,17 @@ def test_init_invalid_serial(mocker, dummy_state):
     assert ctrl.dev is None
     patched.assert_not_called()
 
+
 def test_init_hw_failure(mocker, dummy_config, dummy_state):
     mocker.patch(
-        "controllers.kcube_controller.KcubeHandle",
-        side_effect=RuntimeError("USB fail")
+        "controllers.kcube_controller.KcubeHandle", side_effect=RuntimeError("USB fail")
     )
 
     ctrl = KcubeController(dummy_config, dummy_state)
 
     assert ctrl.dev is None
-    
+
+
 def test_move_absolute_valid(mocker, dummy_config, dummy_state, dummy_device):
     mocker.patch(
         "controllers.kcube_controller.KcubeHandle",

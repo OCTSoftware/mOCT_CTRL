@@ -7,8 +7,8 @@ Created on Feb 20, 2025 by Martin Ahrens
 m.ahrens@uni-luebeck.de
 """
 
-class FILEIO:
 
+class FILEIO:
     @staticmethod
     def read_value(filename, test_name):
         try:

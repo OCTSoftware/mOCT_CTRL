@@ -2,6 +2,12 @@ import atexit
 import sys
 import traceback
 
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+)
+
 from pathlib import Path
 
 from core.config_manager import ConfigManager
@@ -21,47 +27,30 @@ from ui.main_window import MainWindow
 
 def create_app():
 
-    config = ConfigManager(
-        Path(__file__).resolve().parent / "resources" / "config.txt"
-    )
+    config = ConfigManager(Path(__file__).resolve().parent / "resources" / "config.txt")
 
     state = AppState()
 
     nidaq_controllers = []
-
-    nidaq_count = int(
-        config.get("nidaq_count", 1)
-    )
+    nidaq_count = int(config.get("nidaq_count", 1))
 
     for i in range(1, nidaq_count + 1):
-
-        print(
-            "channel",
-            i,
-            config.get(f"nidaq{i}_channel")
-        )
-
-        print(
-            "device",
-            config.get("nidaq_device")
-        )
-
+        print("channel", i, config.get(f"nidaq{i}_channel"))
+        print("device", config.get("nidaq_device"))
         nidaq_controllers.append(
             NidaqController(
-                config=config,
-                state=state,
-                ao_port=config.get(
-                    f"nidaq{i}_channel"
-                )
+                config=config, state=state, ao_port=config.get(f"nidaq{i}_channel")
             )
         )
 
-    #nidaq = NidaqController(config, state) if config.get_bool("using_nidaq") else None
     kcube = KcubeController(config, state) if config.get_bool("using_kcube") else None
     nkt = NktController(config, state) if config.get_bool("using_nkt") else None
     stepper = StepperDriver(config, state) if config.get_bool("using_stepper") else None
     sync = SyncManager(state, nidaq, kcube) if config.get_bool("using_sync") else None
     record = RecordManager(config, state) if config.get_bool("using_record") else None
+
+    sync_controller = SyncController(nidaq_controllers, config)
+    stepper.sync_controller = sync_controller
 
     shutdown_done = False
 
@@ -82,11 +71,7 @@ def create_app():
 
     def handle_exception(exc_type, exc_value, exc_traceback):
 
-        traceback.print_exception(
-            exc_type,
-            exc_value,
-            exc_traceback
-        )
+        traceback.print_exception(exc_type, exc_value, exc_traceback)
 
         safe_shutdown()
 
@@ -100,7 +85,8 @@ def create_app():
         nkt,
         sync,
         stepper,
-        record
+        sync_controller,
+        record,
     )
 
     if nkt is not None:

@@ -30,7 +30,7 @@ class StepperDriver:
     # -------------------------------------------------------------------------
     def __init__(self, config, state):
         """Initialize driver."""
-        
+
         self.config = config
         self.state = state
 
@@ -41,7 +41,7 @@ class StepperDriver:
         self.limits = ""
 
         self.reader_thread: Optional[threading.Thread] = None
-        
+
         self.status = StepperStatus()
 
         self.status_callback = None
@@ -115,9 +115,7 @@ class StepperDriver:
         sent_event = threading.Event()
         done_event = threading.Event()
 
-        self._cmd_queue.put(
-            (cmd, wait_response, sent_event, done_event)
-        )
+        self._cmd_queue.put((cmd, wait_response, sent_event, done_event))
 
         if wait_response:
             done_event.wait(timeout=5.0)
@@ -218,7 +216,6 @@ class StepperDriver:
         """Continuously read serial responses."""
 
         while self.is_connected and self.ser:
-            
             try:
                 if self.ser is None:
                     break
@@ -226,17 +223,16 @@ class StepperDriver:
                 if not self.ser.is_open:
                     break
 
-                line = (
-                    self.ser.readline()
-                    .decode("ascii", errors="ignore")
-                    .strip()
-                )
+                line = self.ser.readline().decode("ascii", errors="ignore").strip()
 
                 if line:
-
                     print("READER:", line)
 
                     self.status.parse(line)
+
+                    if hasattr(self, "sync_controller"):
+                        print("[SYNC] status update")
+                        self.sync_controller.update_from_status(self.status)
 
                     if self.status_callback:
                         self.status_callback(self.status)
@@ -249,11 +245,8 @@ class StepperDriver:
                 AttributeError,
                 TypeError,
             ) as exc:
-
                 if self.is_connected:
-                    self._error(
-                        f"Serial read error: {exc}"
-                    )
+                    self._error(f"Serial read error: {exc}")
 
                 break
 

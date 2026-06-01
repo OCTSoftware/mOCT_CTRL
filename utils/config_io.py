@@ -1,5 +1,4 @@
 class CONFIG_IO:
-
     @staticmethod
     def read_value(path, key, default=None):
         try:
@@ -55,29 +54,19 @@ class CONFIG_IO:
             # nidaq
             if hasattr(app, "nidaq_frame"):
                 CONFIG_IO.write_value(
-                    config_path,
-                    "nidaq_position",
-                    app.nidaq_frame.nidaq_position
+                    config_path, "nidaq_position", app.nidaq_frame.nidaq_position
                 )
 
             # objective selector
             if hasattr(app, "kcube_frame"):
                 selected = app.kcube_frame.selected_var.get()
 
-                CONFIG_IO.write_value(
-                    config_path,
-                    "last_selected",
-                    selected
-                )
+                CONFIG_IO.write_value(config_path, "last_selected", selected)
 
                 if selected in ("05x16", "10x03", "20x05", "40x08"):
                     pos = app.kcube_frame.ctrl.get_position()
 
-                    CONFIG_IO.write_value(
-                        config_path,
-                        selected,
-                        pos
-                    )
+                    CONFIG_IO.write_value(config_path, selected, pos)
 
             # ------------------------------------------------------------------
             # stepper controller
@@ -86,24 +75,16 @@ class CONFIG_IO:
                 driver = app.stepper_controller.driver
 
                 CONFIG_IO.write_value(
-                    config_path,
-                    "stepper_connected",
-                    driver.is_connected
+                    config_path, "stepper_connected", driver.is_connected
                 )
 
                 if hasattr(driver, "sys_state"):
                     CONFIG_IO.write_value(
-                        config_path,
-                        "stepper_state",
-                        driver.sys_state
+                        config_path, "stepper_state", driver.sys_state
                     )
 
                 if hasattr(driver, "limits"):
-                    CONFIG_IO.write_value(
-                        config_path,
-                        "stepper_limits",
-                        driver.limits
-                    )
+                    CONFIG_IO.write_value(config_path, "stepper_limits", driver.limits)
 
             # optional UI/runtime state
             if hasattr(app, "stepper_frame"):
@@ -111,16 +92,12 @@ class CONFIG_IO:
 
                 if hasattr(frame, "selected_port"):
                     CONFIG_IO.write_value(
-                        config_path,
-                        "stepper_port",
-                        frame.selected_port.get()
+                        config_path, "stepper_port", frame.selected_port.get()
                     )
 
                 if hasattr(frame, "baudrate_var"):
                     CONFIG_IO.write_value(
-                        config_path,
-                        "stepper_baudrate",
-                        frame.baudrate_var.get()
+                        config_path, "stepper_baudrate", frame.baudrate_var.get()
                     )
 
         except Exception as e:

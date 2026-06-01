@@ -8,9 +8,8 @@ from utils.led import led
 
 
 class StepperFrame(ctk.CTkFrame):
-
     # ------------------------------------------------------------------
-    def __init__(self, parent, stepper, config):
+    def __init__(self, parent, stepper, config, sync_controller=None):
 
         super().__init__(parent)
 
@@ -19,10 +18,12 @@ class StepperFrame(ctk.CTkFrame):
         self.stepper.status_callback = self.update_status
         print("CALLBACK SET:", self.stepper.status_callback)
         self.config = config
-        
+
         self.stepper_names = ["X", "Y"]
 
         self.configure(fg_color="#2b2b2b")
+
+        self.sync_controller = sync_controller
 
         # ==============================================================
         # LAYOUT
@@ -45,37 +46,69 @@ class StepperFrame(ctk.CTkFrame):
         self.comm_frame = ctk.CTkFrame(self.stepper_frame)
         self.comm_frame.grid(row=0, column=0, padx=5, pady=5, sticky="ns")
 
-        ctk.CTkLabel(self.comm_frame, text="Communication", font=("Arial", 16, "bold")).pack(padx=5, pady=(5, 10))
+        ctk.CTkLabel(
+            self.comm_frame, text="Communication", font=("Arial", 16, "bold")
+        ).pack(padx=5, pady=(5, 10))
 
         saved_port = config.get("stepper_port", "")
         self.selected_port = tk.StringVar(value=saved_port)
-        self.port_combo = ctk.CTkComboBox(self.comm_frame, variable=self.selected_port, values=self.get_ports(), width=140)
+        self.port_combo = ctk.CTkComboBox(
+            self.comm_frame,
+            variable=self.selected_port,
+            values=self.get_ports(),
+            width=140,
+        )
         self.port_combo.pack(padx=5, pady=2)
 
         saved_baud = config.get("stepper_baudrate", "115200")
 
         self.baudrate_var = tk.StringVar(value=str(saved_baud))
-        self.baud_combo = ctk.CTkComboBox(self.comm_frame, variable=self.baudrate_var, values=["9600", "57600", "115200"], width=140)
+        self.baud_combo = ctk.CTkComboBox(
+            self.comm_frame,
+            variable=self.baudrate_var,
+            values=["9600", "57600", "115200"],
+            width=140,
+        )
         self.baud_combo.pack(padx=5, pady=2)
 
-        self.connect_btn = ctk.CTkButton(self.comm_frame, text="Connect", command=self.connect_stepper)
+        self.connect_btn = ctk.CTkButton(
+            self.comm_frame, text="Connect", command=self.connect_stepper
+        )
         self.connect_btn.pack(padx=5, pady=2)
 
-        self.disconnect_btn = ctk.CTkButton(self.comm_frame, text="Disconnect", command=self.disconnect_stepper)
+        self.disconnect_btn = ctk.CTkButton(
+            self.comm_frame, text="Disconnect", command=self.disconnect_stepper
+        )
         self.disconnect_btn.pack(padx=5, pady=2)
 
         ctk.CTkLabel(self.comm_frame, text="Command").pack(padx=5, pady=(10, 2))
 
         self.command_var = tk.StringVar()
-        self.command_entry = ctk.CTkEntry(self.comm_frame, textvariable=self.command_var, width=140)
+        self.command_entry = ctk.CTkEntry(
+            self.comm_frame, textvariable=self.command_var, width=140
+        )
         self.command_entry.pack(padx=5, pady=2)
         self.command_entry.bind("<Return>", lambda event: self.send_command())
 
-        self.send_btn = ctk.CTkButton(self.comm_frame, text="Send", command=self.send_command)
+        self.send_btn = ctk.CTkButton(
+            self.comm_frame, text="Send", command=self.send_command
+        )
         self.send_btn.pack(padx=5, pady=2)
 
         self.status_box = ctk.CTkTextbox(self.comm_frame, width=140, height=100)
         self.status_box.pack(padx=5, pady=(10, 5))
+
+        # ==============================================================
+        # SYNC
+        # ==============================================================
+        self.sync_var = ctk.BooleanVar(
+            value=(sync_controller.enabled if sync_controller else False)
+        )
+        self.sync_switch = ctk.CTkSwitch(
+            self, text="NIDAQ Sync", variable=self.sync_var, command=self.toggle_sync
+        )
+        self.sync_switch.deselect()
+        self.sync_switch.grid(row=1, column=0, padx=5, pady=5, sticky="w")
 
         # ==============================================================
         # STEPPERS
@@ -87,11 +120,12 @@ class StepperFrame(ctk.CTkFrame):
         self.stepper_widgets = {}
 
         for idx, name in enumerate(self.stepper_names):
-
             frame = ctk.CTkFrame(self.stepper_container)
             frame.grid(row=idx, column=0, padx=5, pady=5, sticky="n")
 
-            ctk.CTkLabel(frame, text=name, font=("Arial", 16, "bold")).pack(padx=5, pady=(5, 10))
+            ctk.CTkLabel(frame, text=name, font=("Arial", 16, "bold")).pack(
+                padx=5, pady=(5, 10)
+            )
 
             state_label = ctk.CTkLabel(frame, text="State: ---")
             state_label.pack(padx=5, pady=2)
@@ -99,34 +133,17 @@ class StepperFrame(ctk.CTkFrame):
             position_label = ctk.CTkLabel(frame, text="Pos: ---")
             position_label.pack(padx=5, pady=2)
 
-            limit_frame = ctk.CTkFrame(
-                frame,
-                fg_color="transparent"
-            )
+            limit_frame = ctk.CTkFrame(frame, fg_color="transparent")
             limit_frame.pack(padx=5, pady=2)
 
-            ctk.CTkLabel(
-                limit_frame,
-                text="Home"
-            ).grid(row=0, column=0, padx=2)
+            ctk.CTkLabel(limit_frame, text="Home").grid(row=0, column=0, padx=2)
 
-            home_led = led(
-                limit_frame,
-                size=14,
-                color_on="green"
-            )
+            home_led = led(limit_frame, size=14, color_on="green")
             home_led.grid(row=0, column=1, padx=2)
 
-            ctk.CTkLabel(
-                limit_frame,
-                text="End"
-            ).grid(row=0, column=2, padx=(10, 2))
+            ctk.CTkLabel(limit_frame, text="End").grid(row=0, column=2, padx=(10, 2))
 
-            end_led = led(
-                limit_frame,
-                size=14,
-                color_on="red"
-            )
+            end_led = led(limit_frame, size=14, color_on="red")
             end_led.grid(row=0, column=3, padx=2)
 
             speed_var = tk.StringVar(value="100")
@@ -134,10 +151,14 @@ class StepperFrame(ctk.CTkFrame):
             speed_entry.pack(padx=5, pady=2)
             speed_entry.bind("<Return>", lambda event: self.send_command())
 
-            jog_pos_btn = ctk.CTkButton(frame, text="Jog +", command=lambda n=name: self.jog_positive(name))
+            jog_pos_btn = ctk.CTkButton(
+                frame, text="Jog +", command=lambda n=name: self.jog_positive(n)
+            )
             jog_pos_btn.pack(padx=5, pady=2)
 
-            jog_neg_btn = ctk.CTkButton(frame, text="Jog -", command=lambda n=name: self.jog_negative(name))
+            jog_neg_btn = ctk.CTkButton(
+                frame, text="Jog -", command=lambda n=name: self.jog_negative(n)
+            )
             jog_neg_btn.pack(padx=5, pady=2)
 
             self.stepper_widgets[name] = {
@@ -146,16 +167,13 @@ class StepperFrame(ctk.CTkFrame):
                 "position_label": position_label,
                 "home_led": home_led,
                 "end_led": end_led,
-                "speed_var": speed_var
+                "speed_var": speed_var,
             }
 
     # ------------------------------------------------------------------
     def update_status(self, status):
 
-        self.after(
-            0,
-            lambda: self._update_widgets(status)
-        )
+        self.after(0, lambda: self._update_widgets(status))
 
     # ------------------------------------------------------------------
     def _update_widgets(self, status):
@@ -186,7 +204,6 @@ class StepperFrame(ctk.CTkFrame):
         else:
             self.stepper_widgets["X"]["end_led"].off()
 
-
         if status.y.home:
             self.stepper_widgets["Y"]["home_led"].on()
         else:
@@ -198,6 +215,12 @@ class StepperFrame(ctk.CTkFrame):
             self.stepper_widgets["Y"]["end_led"].off()
 
     # ------------------------------------------------------------------
+    def toggle_sync(self):
+
+        if self.sync_controller:
+            self.sync_controller.set_enabled(self.sync_var.get())
+
+    # ------------------------------------------------------------------
     def get_ports(self):
 
         ports = serial.tools.list_ports.comports()
@@ -206,7 +229,6 @@ class StepperFrame(ctk.CTkFrame):
         labels = []
 
         for p in ports:
-
             device = p.device
             desc = p.description or ""
             manu = p.manufacturer or ""
@@ -246,9 +268,7 @@ class StepperFrame(ctk.CTkFrame):
     # ------------------------------------------------------------------
     def jog_positive(self, axis):
 
-        speed = float(
-            self.stepper_widgets[axis]["speed_var"].get()
-        )
+        speed = float(self.stepper_widgets[axis]["speed_var"].get())
 
         self.stepper.send_jog_speed(axis, speed)
 
@@ -257,9 +277,7 @@ class StepperFrame(ctk.CTkFrame):
     # ------------------------------------------------------------------
     def jog_negative(self, axis):
 
-        speed = float(
-            self.stepper_widgets[axis]["speed_var"].get()
-        )
+        speed = float(self.stepper_widgets[axis]["speed_var"].get())
 
         self.stepper.send_jog_speed(axis, -speed)
 

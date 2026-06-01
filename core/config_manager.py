@@ -1,7 +1,7 @@
 from utils.config_io import CONFIG_IO
 
-class ConfigManager:
 
+class ConfigManager:
     def __init__(self, path):
         self.path = path
 

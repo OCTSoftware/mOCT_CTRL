@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 @dataclass
 class AxisStatus:
-
     position: int = 0
     distance: int = 0
 
@@ -15,7 +14,6 @@ class AxisStatus:
 
 
 class StepperStatus:
-
     STATE_MAP = {
         0: "Idle",
         1: "Seek",
@@ -55,7 +53,6 @@ class StepperStatus:
         i = 2
 
         while i < len(parts) - 1:
-
             data[parts[i]] = parts[i + 1]
             i += 2
 
@@ -84,7 +81,6 @@ class StepperStatus:
         i = 2
 
         while i < len(parts) - 1:
-
             data[parts[i]] = parts[i + 1]
             i += 2
 
