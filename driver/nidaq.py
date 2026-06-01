@@ -44,6 +44,13 @@ class NidaqHandle:
 
             if __DEBUG__:
                 print("Initialize nidaq control")
+                
+        except Exception as e:
+            print(f"An exception occurred {e}\n")
+            print("self.task_out = None, self.task_in = None")
+            self.task_out = None
+            self.task_in = None
+            raise
 
         except Exception as e:
             print(f"An exception occurred {e}")

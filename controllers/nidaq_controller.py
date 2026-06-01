@@ -27,7 +27,10 @@ class NidaqController:
         pos = max(0, min(float(pos), 400))
         self.state.nidaq_position = pos
         if self.dev:
-            self.dev.set_position(pos * 10 / 400)
+            MAX_POS = 400
+            MAX_VOLTAGE = 5.0
+
+            self.dev.set_position(pos * MAX_VOLTAGE / MAX_POS)
 
     def move_relative(self, delta):
 
