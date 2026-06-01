@@ -11,13 +11,30 @@ using_record=False
 
 #################################### MIPOS ####################################
 
-# -> NIDAQ board device and ports
+# NI-DAQ device
 nidaq_device = Dev1
-nidaq_ao_port = ao0
+
+# Shared analog input
 nidaq_ai_port = ai0
-nidaq_min_out = 0.0
-nidaq_max_out = 5.0
-nidaq_position = 200
+
+# Output voltage range
+nidaq_min_out = 0
+nidaq_max_out = 5
+
+# Position range
+nidaq_min_position = 0
+nidaq_max_position = 400
+nidaq_center_position = 200
+
+# Channels
+nidaq_count = 1
+
+nidaq1_channel = ao0
+nidaq2_channel = ao1
+
+nidaq_jog_large = 50
+nidaq_jog_medium = 10
+nidaq_jog_small = 1
 
 #################################### KCUBE ####################################
 

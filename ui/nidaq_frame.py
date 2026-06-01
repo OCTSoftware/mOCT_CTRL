@@ -1,177 +1,297 @@
-
 import customtkinter as ctk
 
-from utils.image_loader import load_image
+
+class NidaqChannelFrame(ctk.CTkFrame):
+
+    def __init__(self, parent, ctrl, config, title):
+        super().__init__(parent)
+
+        self.ctrl = ctrl
+
+        self.min_position = float(
+            config.get("nidaq_min_position", 0)
+        )
+
+        self.max_position = float(
+            config.get("nidaq_max_position", 400)
+        )
+
+        self.center_position = float(
+            config.get("nidaq_center_position", 200)
+        )
+
+        self.position = float(
+            getattr(ctrl, "position", self.center_position)
+        )
+        
+        large = int(config.get("nidaq_jog_large", 50))
+        medium = int(config.get("nidaq_jog_medium", 10))
+        small = int(config.get("nidaq_jog_small", 1))
+
+        self.jog_steps = [large, medium, small]
+
+        # --------------------------
+        # Title
+        # --------------------------
+
+        ctk.CTkLabel(
+            self,
+            text=title,
+            font=("Arial", 16, "bold")
+        ).grid(
+            row=0,
+            column=0,
+            columnspan=3,
+            pady=(5, 10)
+        )
+
+        self.position_label = ctk.CTkLabel(
+            self,
+            text=f"Position: {self.position:.1f}"
+        )
+
+        self.position_label.grid(
+            row=1,
+            column=0,
+            columnspan=3,
+            pady=(0, 10)
+        )
+
+        # --------------------------
+        # Positive buttons
+        # --------------------------
+
+        ctk.CTkButton(
+            self,
+            text="+50",
+            width=50,
+            command=lambda: self.move_relative(50)
+        ).grid(row=2, column=0, padx=2, pady=2)
+
+        ctk.CTkButton(
+            self,
+            text="+10",
+            width=50,
+            command=lambda: self.move_relative(10)
+        ).grid(row=2, column=1, padx=2, pady=2)
+
+        ctk.CTkButton(
+            self,
+            text="+1",
+            width=50,
+            command=lambda: self.move_relative(1)
+        ).grid(row=2, column=2, padx=2, pady=2)
+
+        # --------------------------
+        # Slider
+        # --------------------------
+
+        self.slider = ctk.CTkSlider(
+            self,
+            orientation="vertical",
+            from_=self.max_position,
+            to=self.min_position,
+            height=150
+        )
+
+        self.slider.grid(
+            row=3,
+            column=0,
+            columnspan=3,
+            pady=5
+        )
+
+        self.slider.set(self.position)
+
+        self.slider.bind(
+            "<ButtonRelease-1>",
+            self.slider_released
+        )
+               
+        self.slider.configure(
+            command=self.slider_changed
+        )
+
+        # --------------------------
+        # Negative buttons
+        # --------------------------
+
+        ctk.CTkButton(
+            self,
+            text="-1",
+            width=50,
+            command=lambda: self.move_relative(-1)
+        ).grid(row=4, column=0, padx=2, pady=2)
+
+        ctk.CTkButton(
+            self,
+            text="-10",
+            width=50,
+            command=lambda: self.move_relative(-10)
+        ).grid(row=4, column=1, padx=2, pady=2)
+
+        ctk.CTkButton(
+            self,
+            text="-50",
+            width=50,
+            command=lambda: self.move_relative(-50)
+        ).grid(row=4, column=2, padx=2, pady=2)
+
+        # --------------------------
+        # Go to position
+        # --------------------------
+
+        self.position_entry = ctk.CTkEntry(
+            self,
+            width=80
+        )
+
+        self.position_entry.grid(
+            row=5,
+            column=0,
+            columnspan=2,
+            padx=2,
+            pady=5,
+            sticky="ew"
+        )
+
+        self.position_entry.insert(
+            0,
+            str(int(self.position))
+        )
+
+        ctk.CTkButton(
+            self,
+            text="Go",
+            width=50,
+            command=self.goto_position
+        ).grid(
+            row=5,
+            column=2,
+            padx=2,
+            pady=5
+        )
+
+        # --------------------------
+        # Center
+        # --------------------------
+
+        ctk.CTkButton(
+            self,
+            text="Center",
+            command=self.center
+        ).grid(
+            row=6,
+            column=0,
+            columnspan=3,
+            padx=2,
+            pady=(5, 10),
+            sticky="ew"
+        )
+
+    def update_display(self):
+
+        self.position_label.configure(
+            text=f"Position: {self.position:.1f}"
+        )
+
+        self.slider.set(self.position)
+
+        self.position_entry.delete(0, "end")
+        self.position_entry.insert(
+            0,
+            f"{self.position:.1f}"
+        )
+
+    def move_absolute(self, position):
+
+        position = max(
+            self.min_position,
+            min(self.max_position, position)
+        )
+
+        try:
+
+            self.ctrl.move_absolute(position)
+
+            self.position = self.ctrl.position
+
+            self.update_display()
+
+        except Exception as e:
+
+            print(f"[NIDAQ][ERROR] {e}")
+
+    def move_relative(self, delta):
+
+        self.move_absolute(
+            self.position + delta
+        )
+
+    def goto_position(self):
+
+        try:
+
+            self.move_absolute(
+                float(
+                    self.position_entry.get()
+                )
+            )
+
+        except ValueError:
+            pass
+
+    def center(self):
+
+        self.move_absolute(
+            self.center_position
+        )
+
+    def slider_released(self, event):
+
+        self.move_absolute(
+            self.slider.get()
+        )
+    
+    def slider_changed(self, value):
+
+        self.position_label.configure(
+            text=f"Position: {float(value):.1f}"
+        )
 
 
 class NidaqFrame(ctk.CTkFrame):
 
-    def __init__(self, parent, ctrl, config):
-
+    def __init__(
+        self,
+        parent,
+        controllers,
+        config
+    ):
         super().__init__(parent)
 
-        self.ctrl = ctrl
-        self.config = config
+        ctk.CTkLabel(
+            self,
+            text="NIDAQ",
+            font=("Arial", 18, "bold")
+        ).grid(
+            row=0,
+            column=0,
+            columnspan=max(1, len(controllers)),
+            pady=(5, 10)
+        )
 
-        self.nidaq_position = self.ctrl.position
+        for idx, ctrl in enumerate(controllers):
 
-        # ----------------------------------------------------------
-        # exact old UI structure preserved
-        # ----------------------------------------------------------
-
-        self.nidaq_f0 = ctk.CTkFrame(self, fg_color="transparent")
-
-        self.nidaq_f0.grid(row=0, column=0, padx=(5, 2.5), pady=(5, 5), sticky="nw")
-
-        self.nidaq_f01 = ctk.CTkFrame(self.nidaq_f0, fg_color="transparent")
-
-        self.nidaq_f01.grid(row=0, column=0, padx=(5, 2.5), pady=(5, 5), sticky="nw")
-
-        self.nidaq_title = ctk.CTkLabel(self.nidaq_f01, width=75, height=20, font=("Cosmic Sans MS", 18, "normal"), text="MIPOS")
-
-        self.nidaq_title.grid(row=0, column=0, padx=(5, 5), pady=(5, 5))
-
-        img = load_image("focus.png")
-
-        self.ctk_image = ctk.CTkImage(light_image=img, dark_image=img, size=(40, 40))
-
-        self.icon = ctk.CTkLabel(self.nidaq_f01, image=self.ctk_image, text="")
-
-        self.icon.grid(row=0, column=1, padx=(0, 0), pady=(0, 0))
-
-        self.nidaq_f1 = ctk.CTkFrame(self.nidaq_f0, border_width=1, fg_color="transparent")
-
-        self.nidaq_f1.grid(row=1, column=0, padx=(5, 5), pady=(5, 5))
-
-        self.nidaq_f2 = ctk.CTkFrame(self.nidaq_f1, fg_color="transparent")
-
-        self.nidaq_f2.grid(row=3, column=0, padx=(5, 5), pady=(15, 15))
-
-        # ----------------------------------------------------------
-        # buttons
-        # ----------------------------------------------------------
-
-        self.nidaq_bt_p50 = ctk.CTkButton(self.nidaq_f2, width=75, height=20, text="+50", command=lambda: self.nidaq_move(50))
-
-        self.nidaq_bt_p50.grid(row=0, column=0, padx=5, pady=5)
-
-        self.nidaq_bt_p10 = ctk.CTkButton(self.nidaq_f2, width=75, height=20, text="+10", command=lambda: self.nidaq_move(10))
-
-        self.nidaq_bt_p10.grid(row=1, column=0, padx=5, pady=5)
-
-        self.nidaq_bt_p1 = ctk.CTkButton(self.nidaq_f2, width=75, height=20, text="+1", command=lambda: self.nidaq_move(1))
-
-        self.nidaq_bt_p1.grid(row=2, column=0, padx=5, pady=5)
-
-        # ----------------------------------------------------------
-        # slider
-        # ----------------------------------------------------------
-
-        self.nidaq_sldr = ctk.CTkSlider(self.nidaq_f2, orientation=ctk.VERTICAL, height=120, from_=0, to=400)
-
-        self.nidaq_sldr.grid(row=4, column=0, padx=(5, 5), pady=(0, 0))
-
-        self.nidaq_sldr.set(int(self.ctrl.position))
-
-        self.nidaq_sldr.bind("<ButtonPress-1>", self.nidaq_on_mouse_released)
-
-        self.nidaq_sldr.bind("<ButtonRelease-1>", self.nidaq_on_mouse_released)
-
-        self.nidaq_sldr.bind("<B1-Motion>", self.nidaq_on_slider_move)
-
-        self.nidaq_bt_m1 = ctk.CTkButton(self.nidaq_f2, width=75, height=20, text="-1", command=lambda: self.nidaq_move(-1))
-
-        self.nidaq_bt_m1.grid(row=5, column=0, padx=5, pady=5)
-
-        self.nidaq_bt_m10 = ctk.CTkButton(self.nidaq_f2, width=75, height=20, text="-10", command=lambda: self.nidaq_move(-10))
-
-        self.nidaq_bt_m10.grid(row=6, column=0, padx=5, pady=5)
-
-        self.nidaq_bt_m50 = ctk.CTkButton(self.nidaq_f2, width=75, height=20, text="-50", command=lambda: self.nidaq_move(-50))
-
-        self.nidaq_bt_m50.grid(row=7, column=0, padx=5, pady=5)
-
-        # ----------------------------------------------------------
-        # right panel
-        # ----------------------------------------------------------
-
-        self.nidaq_f3 = ctk.CTkFrame(self.nidaq_f1, fg_color="transparent")
-
-        self.nidaq_f3.grid(row=3, column=1, padx=(5, 5), pady=(0, 0))
-
-        self.nidaq_lb = ctk.CTkLabel(self.nidaq_f3, width=75, height=20)
-
-        self.nidaq_lb.grid(row=0, column=0, padx=5, pady=5)
-
-        self.nidaq_tf = ctk.CTkEntry(self.nidaq_f3, width=75, height=20, justify="center")
-
-        self.nidaq_tf.grid(row=1, column=0, padx=5, pady=5)
-        self.nidaq_tf.insert(0, "0")
-
-        self.nidaq_bt_go = ctk.CTkButton(self.nidaq_f3, width=75, height=20, text="Go", command=self.nidaq_go)
-
-        self.nidaq_bt_go.grid(row=2, column=0, padx=5, pady=5)
-
-        self.nidaq_bt_center = ctk.CTkButton(self.nidaq_f3, width=75, height=20, text="Center", command=self.nidaq_center)
-
-        self.nidaq_bt_center.grid(row=3, column=0, padx=5, pady=5)
-
-        self.nidaq_init_position()
-
-    # ----------------------------------------------------------
-    # migrated callbacks
-    # ----------------------------------------------------------
-
-    def nidaq_move(self, delta):
-        self.nidaq_position += delta
-        self.nidaq_position = max(0, min(400, self.nidaq_position))
-
-        try:
-            self.ctrl.move_absolute(self.nidaq_position)
-            self.nidaq_lb.configure(text=f"{self.nidaq_position:.1f}")
-            self.nidaq_sldr.set(self.nidaq_position)
-        except:
-            print(f"self.ctrl.move_absolute -> {e}")
-
-    def nidaq_go(self):
-        value = float(self.nidaq_tf.get())
-
-        self.nidaq_position = value
-
-        try:
-            self.ctrl.move_absolute(value)
-            self.nidaq_lb.configure(text=f"{value:.1f}")
-            self.nidaq_sldr.set(value)
-        except:
-            print(f"self.ctrl.move_absolute -> {e}")        
-
-    def nidaq_center(self):
-        self.nidaq_position = 200.0
-
-        try:
-            self.ctrl.move_absolute(200)
-            self.nidaq_lb.configure(text="200.0")
-            self.nidaq_sldr.set(200)
-        except:
-            print(f"self.ctrl.move_absolute -> {e}")    
-
-    def nidaq_on_slider_move(self, event):
-        value = self.nidaq_sldr.get()
-
-        self.nidaq_lb.configure(text=f"{value:.1f}")
-
-    def nidaq_on_mouse_released(self, event):
-        value = self.nidaq_sldr.get()
-
-        self.nidaq_position = value
-
-        try:
-            self.ctrl.move_absolute(value)
-            self.nidaq_lb.configure(text=f"{value:.1f}")
-        except:
-            print(f"self.ctrl.move_absolute -> {e}")  
-
-    def nidaq_init_position(self):
-        self.nidaq_lb.configure(text=f"{self.nidaq_position:.1f}")
-
-        self.nidaq_sldr.set(self.nidaq_position)
+            NidaqChannelFrame(
+                self,
+                ctrl,
+                config,
+                title=f"NIDAQ {idx + 1}"
+            ).grid(
+                row=1,
+                column=idx,
+                padx=5,
+                pady=5,
+                sticky="n"
+            )

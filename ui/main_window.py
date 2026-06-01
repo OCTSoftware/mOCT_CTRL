@@ -9,13 +9,25 @@ from ui.recording_frame import RecordingFrame
 from ui.footer_frame import FooterFrame
 
 class MainWindow(ctk.CTk):
-    def __init__(self, config, state, nidaq, kcube, nkt, sync, stepper, record):
+    def __init__(self, config, state, nidaq_controllers, kcube, nkt, sync, stepper, record):
         super().__init__()
         self.title("mOCT CTRL Refactored")
         self.grid_columnconfigure((0,1,2), weight=1)
         
-        if nidaq:
-            NidaqFrame(self, nidaq, config).grid(row=0, column=0, padx=5, pady=5, sticky='nw')
+        if nidaq_controllers:
+            NidaqFrame(
+                self,
+                nidaq_controllers,
+                config
+            ).grid(
+                row=0,
+                column=0,
+                padx=5,
+                pady=5,
+                sticky="nw"
+            )
+            
+            # NidaqFrame(self, nidaq, config).grid(row=0, column=0, padx=5, pady=5, sticky='nw')
         if stepper:
             StepperFrame(self, stepper, config).grid(row=0, column=1, padx=5, pady=5, sticky='nw')
         if kcube:
@@ -28,3 +40,19 @@ class MainWindow(ctk.CTk):
             RecordingFrame(self, record, config).grid(row=1, column=1, padx=5, pady=5, sticky='nw')
         
         FooterFrame(self).grid(row=2, column=1, padx=5, pady=5, sticky='sw')
+        
+        self.protocol(
+            "WM_DELETE_WINDOW",
+            self.on_closing
+        )
+        
+    def on_closing(self):
+
+        for ctrl in self.nidaq_controllers:
+
+            try:
+                ctrl.close()
+            except Exception as e:
+                print(e)
+
+        self.destroy()
