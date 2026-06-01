@@ -17,11 +17,9 @@ class NktController:
                 print("NKT initialization failed:", e)
                 self.dev = None
 
-    # -----------------------------------------------------------------------------
     def attach_app(self, app):
         self.app = app
 
-    # -----------------------------------------------------------------------------
     def _refresh_watchdog(self):
         if not self.dev:
             return
@@ -34,7 +32,6 @@ class NktController:
         if self.app:
             self.watchdog_job = self.app.after(2000, self._refresh_watchdog)
 
-    # -----------------------------------------------------------------------------
     def toggle(self):
         self.state.laser_enabled = not self.state.laser_enabled
 
@@ -48,19 +45,16 @@ class NktController:
                 self.app.after_cancel(self.watchdog_job)
                 self.watchdog_job = None
 
-    # -----------------------------------------------------------------------------
     def set_current(self, current):
         self.state.nkt_power = current
 
         if self.dev:
             self.dev.set_current(current)
 
-    # -----------------------------------------------------------------------------
     def reset_interlock(self):
         if self.dev:
             self.dev.reset_interlock()
 
-    # -----------------------------------------------------------------------------
     def emergency_shutdown(self):
         if self.dev:
             self.dev.emergency_shutdown()

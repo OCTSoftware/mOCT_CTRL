@@ -8,7 +8,6 @@ from utils.led import led
 
 
 class StepperFrame(ctk.CTkFrame):
-    # ------------------------------------------------------------------
     def __init__(self, parent, stepper, config, sync_controller=None):
 
         super().__init__(parent)
@@ -170,12 +169,10 @@ class StepperFrame(ctk.CTkFrame):
                 "speed_var": speed_var,
             }
 
-    # ------------------------------------------------------------------
     def update_status(self, status):
 
         self.after(0, lambda: self._update_widgets(status))
 
-    # ------------------------------------------------------------------
     def _update_widgets(self, status):
 
         self.stepper_widgets["X"]["position_label"].configure(
@@ -214,13 +211,11 @@ class StepperFrame(ctk.CTkFrame):
         else:
             self.stepper_widgets["Y"]["end_led"].off()
 
-    # ------------------------------------------------------------------
     def toggle_sync(self):
 
         if self.sync_controller:
             self.sync_controller.set_enabled(self.sync_var.get())
 
-    # ------------------------------------------------------------------
     def get_ports(self):
 
         ports = serial.tools.list_ports.comports()
@@ -246,7 +241,6 @@ class StepperFrame(ctk.CTkFrame):
 
         return labels
 
-    # ------------------------------------------------------------------
     def connect_stepper(self):
 
         selected = self.selected_port.get()
@@ -258,14 +252,12 @@ class StepperFrame(ctk.CTkFrame):
 
         self.log(f"Connected: {port}")
 
-    # ------------------------------------------------------------------
     def disconnect_stepper(self):
 
         self.stepper.disconnect()
 
         self.log("Disconnected")
 
-    # ------------------------------------------------------------------
     def jog_positive(self, axis):
 
         speed = float(self.stepper_widgets[axis]["speed_var"].get())
@@ -274,7 +266,6 @@ class StepperFrame(ctk.CTkFrame):
 
         self.log(f"Jog + {axis} {speed}")
 
-    # ------------------------------------------------------------------
     def jog_negative(self, axis):
 
         speed = float(self.stepper_widgets[axis]["speed_var"].get())
@@ -283,7 +274,6 @@ class StepperFrame(ctk.CTkFrame):
 
         self.log(f"Jog - {axis} {speed}")
 
-    # ------------------------------------------------------------------
     def send_command(self):
 
         cmd = self.command_var.get()
@@ -292,7 +282,6 @@ class StepperFrame(ctk.CTkFrame):
 
         self.log(f"CMD: {cmd}")
 
-    # ------------------------------------------------------------------
     def log(self, message):
 
         self.status_box.insert("end", f"{message}\n")

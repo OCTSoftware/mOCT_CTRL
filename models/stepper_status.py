@@ -29,7 +29,6 @@ class StepperStatus:
         self.x = AxisStatus()
         self.y = AxisStatus()
 
-    # ------------------------------------------------------------
     def parse(self, line):
 
         if line.startswith("SYS"):
@@ -38,7 +37,6 @@ class StepperStatus:
         elif line.startswith("LIM"):
             self._parse_lim(line)
 
-    # ------------------------------------------------------------
     def _parse_sys(self, line):
 
         parts = line.split()
@@ -66,7 +64,6 @@ class StepperStatus:
         self.y.distance = int(data.get("D2", self.y.distance))
         self.y.jog = bool(int(data.get("S2", 0)))
 
-    # ------------------------------------------------------------
     def _parse_lim(self, line):
 
         parts = line.split()

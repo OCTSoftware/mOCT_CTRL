@@ -68,9 +68,7 @@ class CONFIG_IO:
 
                     CONFIG_IO.write_value(config_path, selected, pos)
 
-            # ------------------------------------------------------------------
             # stepper controller
-            # ------------------------------------------------------------------
             if hasattr(app, "stepper_controller"):
                 driver = app.stepper_controller.driver
 

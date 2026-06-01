@@ -28,7 +28,6 @@ class StageStatus(NamedTuple):
 class PIGCSHandle:
     """PIGCSHandle"""
 
-    # --------------------------------------------------------------------------
     def __init__(self, comport: str) -> None:
         """__init__"""
 
@@ -36,7 +35,6 @@ class PIGCSHandle:
         self.axes = ""
         print("\n")
 
-    # --------------------------------------------------------------------------
     def connect(self, comport: str) -> int:
         """Connect device"""
 
@@ -69,18 +67,10 @@ class PIGCSHandle:
             print(f"COM9 port failed: {exc}")
             status = -2
             return status
-
-        # Go to negative limit
-        # self.pidevice.gcscommands.FNL(self.axes)
-        # while not all(pitools.ontarget(self.pidevice, self.axes).values()):
-        #     sleep(0.05)
-        # print('Servo reached negative limit')
-
         status = 2
 
         return status
 
-    # --------------------------------------------------------------------------
     def move_fnl(self) -> None:
         """Go to negative limit"""
 
@@ -89,7 +79,6 @@ class PIGCSHandle:
             sleep(0.05)
         print("Servo reached negative limit")
 
-    # --------------------------------------------------------------------------
     def move_abs(self, absolut_position) -> StageStatus[int, float]:
         """
         Move to absolute position
@@ -123,7 +112,6 @@ class PIGCSHandle:
 
         return status, position
 
-    # --------------------------------------------------------------------------
     def move_rel(self, relative_position) -> StageStatus[int, float]:
         """
         Move a relative distance
@@ -155,7 +143,6 @@ class PIGCSHandle:
 
         return StageStatus(status, position)
 
-    # --------------------------------------------------------------------------
     def get_pos(self) -> float:
         """
         Query the position
@@ -164,7 +151,6 @@ class PIGCSHandle:
         position = next(iter(current_pos.values()))
         return position
 
-    # --------------------------------------------------------------------------
     def disconnect(self) -> None:
         """
         Disconnect device

@@ -34,9 +34,7 @@ class SyncFrame(ctk.CTkFrame):
 
         self.f3a.grid(row=2, column=0, padx=(5, 5), pady=(0, 25), sticky="nw")
 
-        # ----------------------------------------------------------
         # sync switch
-        # ----------------------------------------------------------
 
         self.sync_switch_bt = ctk.CTkSwitch(
             self.f3a,
@@ -48,9 +46,7 @@ class SyncFrame(ctk.CTkFrame):
             row=0, column=0, padx=(5, 20), pady=(5, 5), sticky="nw"
         )
 
-        # ----------------------------------------------------------
         # hysteresis switch
-        # ----------------------------------------------------------
 
         self.hyst_switch_bt = ctk.CTkSwitch(
             self.f3a,
@@ -64,9 +60,7 @@ class SyncFrame(ctk.CTkFrame):
 
         self.hyst_switch_bt.configure(state="disabled")
 
-        # ----------------------------------------------------------
         # refractive index
-        # ----------------------------------------------------------
 
         self.refindex_lb = ctk.CTkLabel(
             self.f3a, width=50, height=20, text="Refractive Index"
@@ -83,9 +77,7 @@ class SyncFrame(ctk.CTkFrame):
         self.refractiveindex_tf.insert(0, "1.33")
         self.refractiveindex_tf.configure(state="disabled")
 
-        # ----------------------------------------------------------
         # sync move buttons
-        # ----------------------------------------------------------
 
         self.move_bt_p1 = ctk.CTkButton(
             self.f3a,
@@ -135,9 +127,7 @@ class SyncFrame(ctk.CTkFrame):
 
         self.move_bt_m10.configure(state="disabled")
 
-        # ----------------------------------------------------------
         # sync factor
-        # ----------------------------------------------------------
 
         self.syncfactor_lb = ctk.CTkLabel(
             self.f3a, width=50, height=20, text="Syncfaktor"
@@ -153,9 +143,7 @@ class SyncFrame(ctk.CTkFrame):
 
         self.syncfactor_tf.insert(0, "0.11")
 
-    # ----------------------------------------------------------
     # migrated callbacks
-    # ----------------------------------------------------------
 
     def synchronize_kinesis_mipos(self):
 

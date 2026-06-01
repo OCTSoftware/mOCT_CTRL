@@ -27,7 +27,6 @@ class StepperDriver:
     - Callback-based status reporting
     """
 
-    # -------------------------------------------------------------------------
     def __init__(self, config, state):
         """Initialize driver."""
 
@@ -57,7 +56,6 @@ class StepperDriver:
 
         self._wait_event = threading.Event()
 
-    # -------------------------------------------------------------------------
     def connect(self, port: str, baud: int = 115200) -> bool:
         """Connect to serial port."""
 
@@ -92,7 +90,6 @@ class StepperDriver:
             self._error(f"Connect error: {exc}")
             return False
 
-    # -------------------------------------------------------------------------
     def disconnect(self):
         """Disconnect serial port."""
 
@@ -108,7 +105,6 @@ class StepperDriver:
 
         print("[STEPPER] Disconnected")
 
-    # -------------------------------------------------------------------------
     def send_cmd(self, cmd: str, wait_response: bool = False):
         """Queue command for sending."""
 
@@ -122,20 +118,17 @@ class StepperDriver:
         else:
             sent_event.wait(timeout=1.0)
 
-    # -------------------------------------------------------------------------
     def send_jog_speed(self, axis: str, speed: float, wait_response: bool = False):
         """Send jog speed command."""
 
         cmd = f"JOGREL {axis} {int(speed)}"
         self.send_cmd(cmd, wait_response=wait_response)
 
-    # -------------------------------------------------------------------------
     def process_response(self, line: str):
         """Public response parser wrapper."""
 
         return self._process_response(line)
 
-    # -------------------------------------------------------------------------
     def _send_line(self, line: str):
         """Send raw line over serial."""
 
@@ -161,7 +154,6 @@ class StepperDriver:
         ) as exc:
             self._error(f"Serial write error: {exc}")
 
-    # -------------------------------------------------------------------------
     def _process_queue(self):
         """Background queue worker."""
 
@@ -200,7 +192,6 @@ class StepperDriver:
             done_event.set()
             self._cmd_queue.task_done()
 
-    # -------------------------------------------------------------------------
     def _start_reader(self):
         """Start serial reader thread."""
 
@@ -211,7 +202,6 @@ class StepperDriver:
 
         self.reader_thread.start()
 
-    # -------------------------------------------------------------------------
     def _reader_loop(self):
         """Continuously read serial responses."""
 
@@ -250,7 +240,6 @@ class StepperDriver:
 
                 break
 
-    # -------------------------------------------------------------------------
     def _process_response(self, line: str):
         """Parse device responses."""
 
@@ -285,17 +274,14 @@ class StepperDriver:
                 "rx",
             )
 
-    # ------------------------------------------------------------------
     def _log(self, message, level="info"):
 
         print(f"[STEPPER][{level.upper()}] {message}")
 
-    # ------------------------------------------------------------------
     def _error(self, message):
 
         print(f"[STEPPER][ERROR] {message}")
 
-    # ------------------------------------------------------------------
     def _status_update(self, data):
 
         if hasattr(self, "state") and self.state is not None:

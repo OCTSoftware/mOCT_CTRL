@@ -34,7 +34,6 @@ class KcubeHandle:
     stage_enabled = False
     stage_homed = False
 
-    # -----------------------------------------------------------------------------
     def __init__(self, serial_no: str) -> None:
         """
         Initialize instance: load DLLs and connect to KCube
@@ -79,7 +78,6 @@ class KcubeHandle:
         if __DEBUG__:
             print("KCube connected")
 
-    # -----------------------------------------------------------------------------
     def home(self) -> None:
         """
         Set home position.
@@ -95,7 +93,6 @@ class KcubeHandle:
         if __DEBUG__:
             print("KCube homed")
 
-    # -----------------------------------------------------------------------------
     def set_position(self, value: float) -> None:
         """
         Move the stage to a certain position.
@@ -113,7 +110,6 @@ class KcubeHandle:
         value = Decimal(value)
         self.kcube.MoveTo(value, 60000)
 
-    # -----------------------------------------------------------------------------
     def get_position(self) -> float:
         """
         Move the stage to a certain position.
@@ -135,7 +131,6 @@ class KcubeHandle:
         position = float(value)
         return position
 
-    # -----------------------------------------------------------------------------
     def set_velocity_params(self, velocity_key: str = "medium") -> None:
         """
         Change the preset Kcube velocity parameters.
@@ -166,7 +161,6 @@ class KcubeHandle:
         # set the desired velocity params
         self.kcube.SetVelocityParams(Decimal(velocity), Decimal(velocity))
 
-    # -----------------------------------------------------------------------------
     def enable(self) -> None:
         """
         Enable / disable  KCube
@@ -184,7 +178,6 @@ class KcubeHandle:
             if __DEBUG__:
                 print("KCube enabled")
 
-    # -----------------------------------------------------------------------------
     def disconnect(self) -> None:
         """
         Stop polling, disable and disconnect the device.

@@ -21,9 +21,7 @@ class NidaqChannelFrame(ctk.CTkFrame):
 
         self.jog_steps = [large, medium, small]
 
-        # --------------------------
         # Title
-        # --------------------------
 
         ctk.CTkLabel(self, text=title, font=("Arial", 16, "bold")).grid(
             row=0, column=0, columnspan=3, pady=(5, 10)
@@ -33,9 +31,7 @@ class NidaqChannelFrame(ctk.CTkFrame):
 
         self.position_label.grid(row=1, column=0, columnspan=3, pady=(0, 10))
 
-        # --------------------------
         # Positive buttons
-        # --------------------------
 
         ctk.CTkButton(
             self, text="+50", width=50, command=lambda: self.move_relative(50)
@@ -49,9 +45,7 @@ class NidaqChannelFrame(ctk.CTkFrame):
             self, text="+1", width=50, command=lambda: self.move_relative(1)
         ).grid(row=2, column=2, padx=2, pady=2)
 
-        # --------------------------
         # Slider
-        # --------------------------
 
         self.slider = ctk.CTkSlider(
             self,
@@ -69,9 +63,7 @@ class NidaqChannelFrame(ctk.CTkFrame):
 
         self.slider.configure(command=self.slider_changed)
 
-        # --------------------------
         # Negative buttons
-        # --------------------------
 
         ctk.CTkButton(
             self, text="-1", width=50, command=lambda: self.move_relative(-1)
@@ -85,9 +77,7 @@ class NidaqChannelFrame(ctk.CTkFrame):
             self, text="-50", width=50, command=lambda: self.move_relative(-50)
         ).grid(row=4, column=2, padx=2, pady=2)
 
-        # --------------------------
         # Go to position
-        # --------------------------
 
         self.position_entry = ctk.CTkEntry(self, width=80)
 
@@ -101,9 +91,7 @@ class NidaqChannelFrame(ctk.CTkFrame):
             row=5, column=2, padx=2, pady=5
         )
 
-        # --------------------------
         # Center
-        # --------------------------
 
         ctk.CTkButton(self, text="Center", command=self.center).grid(
             row=6, column=0, columnspan=3, padx=2, pady=(5, 10), sticky="ew"

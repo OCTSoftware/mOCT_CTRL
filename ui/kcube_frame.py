@@ -17,9 +17,7 @@ class KcubeFrame(ctk.CTkFrame):
 
         self.last_selected = self.config.get("last_selected", "home")
 
-        # ------------------------------------------------------------------
         # original layout preserved
-        # ------------------------------------------------------------------
 
         self.kcube_f0 = ctk.CTkFrame(self, fg_color="transparent")
         self.kcube_f0.grid(row=0, column=1, padx=(2.5, 5), pady=(5, 5), sticky="nw")
@@ -60,9 +58,7 @@ class KcubeFrame(ctk.CTkFrame):
 
         self.kcube_f3.grid(row=1, column=0, padx=(5, 5), pady=(0, 0))
 
-        # ------------------------------------------------------------------
         # movement buttons
-        # ------------------------------------------------------------------
 
         self.kcube_bt_p100 = ctk.CTkButton(
             self.kcube_f3,
@@ -94,9 +90,7 @@ class KcubeFrame(ctk.CTkFrame):
 
         self.kcube_bt_p10.grid(row=2, column=0, padx=5, pady=5)
 
-        # ------------------------------------------------------------------
         # slider
-        # ------------------------------------------------------------------
 
         self.kcube_sldr = ctk.CTkSlider(
             self.kcube_f3, orientation=ctk.VERTICAL, height=120, from_=0, to=100
@@ -138,9 +132,7 @@ class KcubeFrame(ctk.CTkFrame):
 
         self.kcube_bt_m100.grid(row=7, column=0, padx=5, pady=5)
 
-        # ------------------------------------------------------------------
         # position block
-        # ------------------------------------------------------------------
 
         self.kcube_f4 = ctk.CTkFrame(self.kcube_f2, fg_color="transparent")
 
@@ -177,9 +169,7 @@ class KcubeFrame(ctk.CTkFrame):
 
         self.kcube_lb_void.grid(row=4, column=0, padx=5, pady=5)
 
-        # ------------------------------------------------------------------
         # right controls
-        # ------------------------------------------------------------------
 
         self.kcube_f5 = ctk.CTkFrame(self.kcube_f2, fg_color="transparent")
 
@@ -227,9 +217,7 @@ class KcubeFrame(ctk.CTkFrame):
 
         self.kcube_lb_vers.grid(row=4, column=0, padx=5, pady=(70, 5))
 
-        # ------------------------------------------------------------------
         # init
-        # ------------------------------------------------------------------
 
         self.kcube_cb_objective.set(self.last_selected)
 
@@ -243,9 +231,7 @@ class KcubeFrame(ctk.CTkFrame):
 
         self.refresh_kcube_ui()
 
-    # ----------------------------------------------------------------------
     # callbacks
-    # ----------------------------------------------------------------------
 
     def move_absolute_from_entry(self):
         """ """
