@@ -1,5 +1,4 @@
 class RecordManager:
-
     def __init__(self, config, state):
         self.config = config
         self.state = state

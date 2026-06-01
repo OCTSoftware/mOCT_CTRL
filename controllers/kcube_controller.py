@@ -5,9 +5,8 @@ except Exception:
 
 
 class KcubeController:
-
     def __init__(self, config, state):
-        
+
         self.state = state
         self.config = config
         self.dev = None
@@ -27,16 +26,12 @@ class KcubeController:
                 self.dev = None
 
     def move_relative(self, delta):
-        """
-
-        """
+        """ """
 
         self.move_absolute(self.state.kcube_position + delta)
 
     def move_absolute(self, pos_mm):
-        """
-        
-        """
+        """ """
 
         pos_mm = max(0, min(float(pos_mm), 100))
 
@@ -46,9 +41,7 @@ class KcubeController:
             self.dev.set_position(pos_mm)
 
     def home(self):
-        """
-        
-        """
+        """ """
 
         if self.dev:
             self.dev.home()

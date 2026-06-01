@@ -5,6 +5,7 @@ import sys
 from typing import Tuple, List, Optional
 from pathlib import Path
 
+
 class PluginManager:
     """Manages dynamic loading and unloading of hardware plugins."""
 
@@ -13,7 +14,9 @@ class PluginManager:
         self.loaded_modules: dict[str, ModuleType] = {}
         self.plugin_active: dict[str, bool] = {}
 
-    def load_plugin(self, module_path: str, module_name: str, import_names: List[str]) -> Tuple[int, Optional[ModuleType]]:
+    def load_plugin(
+        self, module_path: str, module_name: str, import_names: List[str]
+    ) -> Tuple[int, Optional[ModuleType]]:
         """
         Dynamic equivalent of 'from module_name import name1, name2, ...'
 
@@ -84,7 +87,9 @@ class PluginManager:
         self.loaded_modules.pop(module_name, None)
         self.plugin_active[module_name] = False
 
-    def toggle_plugin(self, fname_plugin: str, hw_name: str, hw_handle: str, check_var=None) -> None:
+    def toggle_plugin(
+        self, fname_plugin: str, hw_name: str, hw_handle: str, check_var=None
+    ) -> None:
         """
         Toggle plugin loading/unloading.
 
@@ -113,10 +118,7 @@ class PluginManager:
         if status == 0:
             print(f"Loaded successfully: {mod}")
 
-            kcube_serial = FILEIO.read_value(
-                self.config_path,
-                "kcube_serial_number"
-            )
+            kcube_serial = FILEIO.read_value(self.config_path, "kcube_serial_number")
 
             if kcube_serial is not None:
                 handle_cls = getattr(mod, hw_handle)

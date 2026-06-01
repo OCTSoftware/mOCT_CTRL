@@ -32,10 +32,7 @@ def test_load_plugin_missing_symbol(tmp_path):
 
 def test_load_plugin_success(tmp_path):
     plugin = tmp_path / "plug.py"
-    plugin.write_text(
-        "class Foo:\n"
-        "    pass\n"
-    )
+    plugin.write_text("class Foo:\n    pass\n")
 
     pm = PluginManager("dummy.cfg")
 
@@ -47,6 +44,7 @@ def test_load_plugin_success(tmp_path):
 
     assert status == 0
     assert mod is not None
+
 
 def test_unload_plugin_calls_close(mocker):
     import utils.pluginmanager as pluginmanager
@@ -61,4 +59,3 @@ def test_unload_plugin_calls_close(mocker):
     pm.unload_plugin("dummy", ["KcubeHandle"])
 
     dev.close.assert_called_once()
-
