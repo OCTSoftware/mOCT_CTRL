@@ -27,7 +27,36 @@ def create_app():
 
     state = AppState()
 
-    nidaq = NidaqController(config, state) if config.get_bool("using_nidaq") else None
+    nidaq_controllers = []
+
+    nidaq_count = int(
+        config.get("nidaq_count", 1)
+    )
+
+    for i in range(1, nidaq_count + 1):
+
+        print(
+            "channel",
+            i,
+            config.get(f"nidaq{i}_channel")
+        )
+
+        print(
+            "device",
+            config.get("nidaq_device")
+        )
+
+        nidaq_controllers.append(
+            NidaqController(
+                config=config,
+                state=state,
+                ao_port=config.get(
+                    f"nidaq{i}_channel"
+                )
+            )
+        )
+
+    #nidaq = NidaqController(config, state) if config.get_bool("using_nidaq") else None
     kcube = KcubeController(config, state) if config.get_bool("using_kcube") else None
     nkt = NktController(config, state) if config.get_bool("using_nkt") else None
     stepper = StepperDriver(config, state) if config.get_bool("using_stepper") else None
@@ -66,7 +95,7 @@ def create_app():
     app = MainWindow(
         config,
         state,
-        nidaq,
+        nidaq_controllers,
         kcube,
         nkt,
         sync,

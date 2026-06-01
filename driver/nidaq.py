@@ -94,8 +94,15 @@ class NidaqHandle:
         Close NI-DAQ module
         """
 
-        self.task_in.close()
-        self.task_out.close()
+        try:
+            self.task_out.close()
+        except Exception:
+            pass
+
+        try:
+            self.task_in.close()
+        except Exception:
+            pass
 
         if __DEBUG__:
             print("Close nidaq control")
