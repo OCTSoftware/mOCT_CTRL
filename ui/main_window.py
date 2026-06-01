@@ -28,9 +28,3 @@ class MainWindow(ctk.CTk):
             RecordingFrame(self, record, config).grid(row=1, column=1, padx=5, pady=5, sticky='nw')
         
         FooterFrame(self).grid(row=2, column=1, padx=5, pady=5, sticky='sw')
-
-    def get_bool(self, key, default=False):
-
-        value = str(self.get(key, default)).strip().lower()
-
-        return value in ("true", "1", "yes", "on")

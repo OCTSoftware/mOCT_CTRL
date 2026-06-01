@@ -19,10 +19,9 @@ class StepperController:
         self.reader_thread = None
         self.status = StepperStatus()
         
+        self.status_callback = None
         print("CALLBACK:", self.status_callback)
         
-        self.status_callback = None
-
         self.driver = StepperDriver(
             callbacks={
                 "log": self._log,

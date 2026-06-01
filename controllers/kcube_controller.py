@@ -1,4 +1,7 @@
-from driver.kinesis import KcubeHandle
+try:
+    from driver.kinesis import KcubeHandle
+except Exception:
+    KcubeHandle = None
 
 
 class KcubeController:
@@ -18,7 +21,7 @@ class KcubeController:
 
         if config.get_bool("using_kcube") and self.serial_number is not None:
             try:
-                self.dev = KcubeHandle(self.serial_number)
+                self.dev = KcubeHandle(self.serial_number) if KcubeHandle else None
             except Exception as exc:
                 print(f"KCube initialization failed: {exc}")
                 self.dev = None

@@ -128,7 +128,7 @@ class StepperDriver:
     def send_jog_speed(self, axis: str, speed: float, wait_response: bool = False):
         """Send jog speed command."""
 
-        cmd = f"JOG {axis} {speed:.1f}"
+        cmd = f"JOGREL {axis} {int(speed)}"
         self.send_cmd(cmd, wait_response=wait_response)
 
     # -------------------------------------------------------------------------

@@ -172,8 +172,11 @@ class KcubeFrame(ctk.CTkFrame):
         """
 
         value = float(self.kcube_tf_position.get())
-        self.ctrl.move_absolute(value)
-        self.refresh_kcube_ui()
+        try:
+            self.ctrl.move_absolute(value)
+            self.refresh_kcube_ui()
+        except  Exception as e:
+            print(f"self.ctrl.move_absolute(value) -> {e}")
 
     def kcube_on_slider_move(self, event):
         """
@@ -189,8 +192,12 @@ class KcubeFrame(ctk.CTkFrame):
         """
 
         value = self.kcube_sldr.get()
-        self.ctrl.move_absolute(value)
-        self.refresh_kcube_ui()
+        
+        try:
+            self.ctrl.move_absolute(value)
+            self.refresh_kcube_ui()
+        except  Exception as e:
+            print(f"self.ctrl.move_absolute(value) -> {e}")
 
     def select_objective(self, selected):
         """
@@ -199,8 +206,12 @@ class KcubeFrame(ctk.CTkFrame):
 
         pos = FILEIO.read_value(self.config.path, selected)
         pos = float(pos)
-        self.ctrl.move_absolute(pos)
-        self.refresh_kcube_ui()
+        
+        try:
+            self.ctrl.move_absolute(value)
+            self.refresh_kcube_ui()
+        except  Exception as e:
+            print(f"self.ctrl.move_absolute(value) -> {e}")
 
     def refresh_kcube_ui(self):
         """

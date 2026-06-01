@@ -126,30 +126,34 @@ class NidaqFrame(ctk.CTkFrame):
         self.nidaq_position += delta
         self.nidaq_position = max(0, min(400, self.nidaq_position))
 
-        self.ctrl.move_absolute(self.nidaq_position)
-
-        self.nidaq_lb.configure(text=f"{self.nidaq_position:.1f}")
-
-        self.nidaq_sldr.set(self.nidaq_position)
+        try:
+            self.ctrl.move_absolute(self.nidaq_position)
+            self.nidaq_lb.configure(text=f"{self.nidaq_position:.1f}")
+            self.nidaq_sldr.set(self.nidaq_position)
+        except:
+            print(f"self.ctrl.move_absolute -> {e}")
 
     def nidaq_go(self):
         value = float(self.nidaq_tf.get())
 
         self.nidaq_position = value
 
-        self.ctrl.move_absolute(value)
-
-        self.nidaq_lb.configure(text=f"{value:.1f}")
-
-        self.nidaq_sldr.set(value)
+        try:
+            self.ctrl.move_absolute(value)
+            self.nidaq_lb.configure(text=f"{value:.1f}")
+            self.nidaq_sldr.set(value)
+        except:
+            print(f"self.ctrl.move_absolute -> {e}")        
 
     def nidaq_center(self):
         self.nidaq_position = 200.0
 
-        self.ctrl.move_absolute(200)
-
-        self.nidaq_lb.configure(text="200.0")
-        self.nidaq_sldr.set(200)
+        try:
+            self.ctrl.move_absolute(200)
+            self.nidaq_lb.configure(text="200.0")
+            self.nidaq_sldr.set(200)
+        except:
+            print(f"self.ctrl.move_absolute -> {e}")    
 
     def nidaq_on_slider_move(self, event):
         value = self.nidaq_sldr.get()
@@ -161,9 +165,11 @@ class NidaqFrame(ctk.CTkFrame):
 
         self.nidaq_position = value
 
-        self.ctrl.move_absolute(value)
-
-        self.nidaq_lb.configure(text=f"{value:.1f}")
+        try:
+            self.ctrl.move_absolute(value)
+            self.nidaq_lb.configure(text=f"{value:.1f}")
+        except:
+            print(f"self.ctrl.move_absolute -> {e}")  
 
     def nidaq_init_position(self):
         self.nidaq_lb.configure(text=f"{self.nidaq_position:.1f}")
