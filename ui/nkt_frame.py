@@ -15,9 +15,7 @@ class NktFrame(ctk.CTkFrame):
         self.interlock_ok = False
         self.laser_enabled = False
 
-        # ----------------------------------------------------------
         # exact old UI structure preserved
-        # ----------------------------------------------------------
 
         self.nkt_f0 = ctk.CTkFrame(self, fg_color="transparent")
 
@@ -49,9 +47,7 @@ class NktFrame(ctk.CTkFrame):
 
         self.nkt_f1.grid(row=1, column=0, padx=(5, 5), pady=(5, 5), sticky="nw")
 
-        # ----------------------------------------------------------
         # buttons
-        # ----------------------------------------------------------
 
         self.nkt_bt_power = ctk.CTkButton(
             self.nkt_f1,
@@ -69,9 +65,7 @@ class NktFrame(ctk.CTkFrame):
 
         self.nkt_bt_laser.grid(row=1, column=0, padx=(5, 5), pady=(5, 20))
 
-        # ----------------------------------------------------------
         # power slider
-        # ----------------------------------------------------------
 
         self.nkt_sldr = ctk.CTkSlider(
             self.nkt_f1, orientation=ctk.HORIZONTAL, width=80, from_=25, to=100
@@ -92,9 +86,7 @@ class NktFrame(ctk.CTkFrame):
 
         self.nkt_tf_power.grid(row=3, column=0, padx=(5, 40), pady=(5, 5))
 
-    # ----------------------------------------------------------
     # migrated callbacks
-    # ----------------------------------------------------------
 
     def nkt_interlock(self):
 

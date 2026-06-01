@@ -8,7 +8,6 @@ class StageLogic:
         self.old_val_prb = 0.0
         self.old_val_ref = 0.0
 
-    # --------------------------------------------------------------------------
     @staticmethod
     def ni_piezo_position_to_voltage(value) -> float:
         """
@@ -19,7 +18,6 @@ class StageLogic:
         """
         return 10 * float(value) / 400
 
-    # --------------------------------------------------------------------------
     @staticmethod
     def ni_piezo_volatage_to_position(value) -> float:
         """

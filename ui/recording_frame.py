@@ -108,9 +108,7 @@ class RecordingFrame(ctk.CTkFrame):
         )
         self.stop_rec.grid(row=5, column=0, padx=(5, 5), pady=(5, 5))
 
-    # ----------------------------------------------------------
     # callbacks
-    # ----------------------------------------------------------
     def select_path(self, target):
 
         ps_script = r"""
