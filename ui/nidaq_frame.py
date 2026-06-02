@@ -1,4 +1,6 @@
 import customtkinter as ctk
+import logging
+logger = logging.getLogger(__name__)
 
 
 class NidaqChannelFrame(ctk.CTkFrame):
@@ -118,7 +120,7 @@ class NidaqChannelFrame(ctk.CTkFrame):
             self.update_display()
 
         except Exception as e:
-            print(f"[NIDAQ][ERROR] {e}")
+            logger.debug(f"[NIDAQ_FRAME] [NIDAQ][ERROR] -> {e}")
 
     def move_relative(self, delta):
 

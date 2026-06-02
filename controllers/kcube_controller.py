@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger(__name__)
 try:
     from driver.kinesis import KcubeHandle
 except Exception:
@@ -21,8 +23,8 @@ class KcubeController:
         if config.get_bool("using_kcube") and self.serial_number is not None:
             try:
                 self.dev = KcubeHandle(self.serial_number) if KcubeHandle else None
-            except Exception as exc:
-                print(f"KCube initialization failed: {exc}")
+            except Exception as e:
+                logger.debug(f"[KCUBE_CONTROLLER] KCube initialization failed -> {e}")
                 self.dev = None
 
     def move_relative(self, delta):

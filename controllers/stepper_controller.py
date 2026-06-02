@@ -13,6 +13,8 @@ from typing import Callable, Dict, Optional
 import serial
 
 from models.stepper_status import StepperStatus
+import logging
+logger = logging.getLogger(__name__)
 
 
 class StepperDriver:
@@ -86,8 +88,8 @@ class StepperDriver:
 
             return True
 
-        except (serial.SerialException, OSError) as exc:
-            self._error(f"Connect error: {exc}")
+        except (serial.SerialException, OSError) as e:
+            self._error(f"Connect error -> {e}")
             return False
 
     def disconnect(self):
@@ -103,7 +105,7 @@ class StepperDriver:
 
         self.ser = None
 
-        print("[STEPPER] Disconnected")
+        logger.debug("[STEPPER_CONTROLLER] [STEPPER] Disconnected")
 
     def send_cmd(self, cmd: str, wait_response: bool = False):
         """Queue command for sending."""
@@ -151,8 +153,8 @@ class StepperDriver:
             serial.SerialTimeoutException,
             serial.SerialException,
             OSError,
-        ) as exc:
-            self._error(f"Serial write error: {exc}")
+        ) as e:
+            self._error(f"Serial write error -> {e}")
 
     def _process_queue(self):
         """Background queue worker."""
@@ -216,12 +218,12 @@ class StepperDriver:
                 line = self.ser.readline().decode("ascii", errors="ignore").strip()
 
                 if line:
-                    print("READER:", line)
+                    logger.debug("[STEPPER_CONTROLLER] READER: {line}")
 
                     self.status.parse(line)
 
                     if hasattr(self, "sync_controller"):
-                        print("[SYNC] status update")
+                        logger.debug("[STEPPER_CONTROLLER] [SYNC] status update")
                         self.sync_controller.update_from_status(self.status)
 
                     if self.status_callback:
@@ -236,7 +238,7 @@ class StepperDriver:
                 TypeError,
             ) as exc:
                 if self.is_connected:
-                    self._error(f"Serial read error: {exc}")
+                    self._error(f"Serial read error -> {e}")
 
                 break
 
@@ -276,15 +278,15 @@ class StepperDriver:
 
     def _log(self, message, level="info"):
 
-        print(f"[STEPPER][{level.upper()}] {message}")
+        logger.debug(f"[STEPPER_CONTROLLER] [STEPPER][{level.upper()}] {message}")
 
     def _error(self, message):
 
-        print(f"[STEPPER][ERROR] {message}")
+        logger.debug(f"[STEPPER_CONTROLLER] [STEPPER][ERROR] {message}")
 
     def _status_update(self, data):
 
         if hasattr(self, "state") and self.state is not None:
             self.state.stepper_status = data
 
-        print(f"[STEPPER][STATUS] {data}")
+        logger.debug(f"[STEPPER_CONTROLLER] [STEPPER][STATUS] {data}")

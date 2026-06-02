@@ -2,6 +2,8 @@ import customtkinter as ctk
 
 from utils.image_loader import load_image
 from utils.fileIO import FILEIO
+import logging
+logger = logging.getLogger(__name__)
 
 
 class KcubeFrame(ctk.CTkFrame):
@@ -241,7 +243,7 @@ class KcubeFrame(ctk.CTkFrame):
             self.ctrl.move_absolute(value)
             self.refresh_kcube_ui()
         except Exception as e:
-            print(f"self.ctrl.move_absolute(value) -> {e}")
+            logger.debug(f"[KCUBE_FRAME] self.ctrl.move_absolute(value) -> {e}")
 
     def kcube_on_slider_move(self, event):
         """ """
@@ -258,7 +260,7 @@ class KcubeFrame(ctk.CTkFrame):
             self.ctrl.move_absolute(value)
             self.refresh_kcube_ui()
         except Exception as e:
-            print(f"self.ctrl.move_absolute(value) -> {e}")
+            logger.debug(f"[KCUBE_FRAME] self.ctrl.move_absolute(value) -> {e}")
 
     def select_objective(self, selected):
         """ """
@@ -267,10 +269,10 @@ class KcubeFrame(ctk.CTkFrame):
         pos = float(pos)
 
         try:
-            self.ctrl.move_absolute(value)
+            self.ctrl.move_absolute(pos)
             self.refresh_kcube_ui()
         except Exception as e:
-            print(f"self.ctrl.move_absolute(value) -> {e}")
+            logger.debug(f"[KCUBE_FRAME] self.ctrl.move_absolute(pos) -> {e}")
 
     def refresh_kcube_ui(self):
         """ """

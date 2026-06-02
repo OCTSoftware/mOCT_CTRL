@@ -3,12 +3,12 @@ import customtkinter as ctk
 from utils.image_loader import load_image
 
 
-class NktFrame(ctk.CTkFrame):
-    def __init__(self, parent, ctrl, config):
+class NktFrame(ctk.CTkFrame):  
+    
+    def __init__(self, parent, config):
 
         super().__init__(parent)
 
-        self.ctrl = ctrl
         self.config = config
 
         self.nkt_power = 100

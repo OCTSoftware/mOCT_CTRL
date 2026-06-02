@@ -2,11 +2,11 @@
 
 # Select devices
 using_nkt=False
-using_kcube=False
+using_kcube=True
 using_nidaq=True
 using_stepper=True
-using_sync=False
-using_record=False
+using_sync=True
+using_record=True
 
 
 #################################### MIPOS ####################################

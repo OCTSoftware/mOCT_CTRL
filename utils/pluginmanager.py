@@ -4,6 +4,8 @@ import os
 import sys
 from typing import Tuple, List, Optional
 from pathlib import Path
+import logging
+logger = logging.getLogger(__name__)
 
 
 class PluginManager:
@@ -76,8 +78,8 @@ class PluginManager:
                 if callable(close_method):
                     try:
                         close_method()
-                    except Exception as exc:
-                        print(f"Failed to close plugin resource {name}: {exc}")
+                    except Exception as e:
+                        logger.debug(f"[PLUGINMANAGER] Failed to close plugin resource {name} -> {e}")
 
                 del globals()[name]
 
@@ -104,7 +106,7 @@ class PluginManager:
         import_names = [hw_handle]
 
         if self.plugin_active.get(hw_name, False):
-            print(f"Unloading {hw_name}")
+            logger.debug(f"[PLUGINMANAGER] Unloading {hw_name}")
             self.unload_plugin(hw_name, import_names)
 
             if check_var is not None:
@@ -112,11 +114,11 @@ class PluginManager:
 
             return
 
-        print(f"Loading {hw_name}")
+        logger.debug(f"[PLUGINMANAGER] f"Loading {hw_name}"")
         status, mod = self.load_plugin(fname_plugin, hw_name, import_names)
 
         if status == 0:
-            print(f"Loaded successfully: {mod}")
+            logger.debug(f"[PLUGINMANAGER] Loaded successfully: {mod}")
 
             kcube_serial = FILEIO.read_value(self.config_path, "kcube_serial_number")
 
@@ -125,10 +127,10 @@ class PluginManager:
                 globals()[hw_handle] = handle_cls(str(int(kcube_serial)))
 
         elif status == -1:
-            print("Load failed")
+            logger.debug("[PLUGINMANAGER] Load failed")
 
         elif status == -2:
-            print("Missing attributes")
+            logger.debug("[PLUGINMANAGER] Missing attributes")
 
         if check_var is not None:
             check_var.set(status == 0)

@@ -10,6 +10,8 @@ m.ahrens@uni-luebeck.de
 # https://nkt-tools.readthedocs.io/en/latest/examples.html
 
 from nkt_tools.extreme import Extreme
+import logging
+logger = logging.getLogger(__name__)
 
 
 class NktHandle:
@@ -22,8 +24,8 @@ class NktHandle:
         self.default_current = 100
 
         self.laser = Extreme()
-        print(self.laser.emission_state)
-        print(self.laser.power_level)
+        logger.debug(f"[NKT] self.laser.emission_state")
+        logger.debug(f"[NKT] self.laser.power_level")
 
     def _kick_watchdog(self):
         """refresh watchdog"""
@@ -71,4 +73,4 @@ class NktHandle:
             self.laser.set_emission(False)
             self.laser.set_current(0)
         except Exception as e:
-            print("Emergency shutdown failed:", e)
+            logger.debug(f"[NKT] Emergency shutdown failed -> {e}")

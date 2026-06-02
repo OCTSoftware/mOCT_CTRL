@@ -24,6 +24,8 @@ from Thorlabs.MotionControl.DeviceManagerCLI import *
 from Thorlabs.MotionControl.GenericMotorCLI import *
 from Thorlabs.MotionControl.KCube.BrushlessMotorCLI import *
 from System import Decimal
+import logging
+logger = logging.getLogger(__name__)
 
 __DEBUG__ = False
 
@@ -76,7 +78,7 @@ class KcubeHandle:
         self.set_velocity_params()
         self.stage_enabled = True
         if __DEBUG__:
-            print("KCube connected")
+            logger.debug("[KINESIS] KCube connected")
 
     def home(self) -> None:
         """
@@ -91,7 +93,7 @@ class KcubeHandle:
 
         self.kcube.Home(60000)  # 60 second timeout
         if __DEBUG__:
-            print("KCube homed")
+            logger.debug("[KINESIS] KCube homed")
 
     def set_position(self, value: float) -> None:
         """
@@ -105,7 +107,7 @@ class KcubeHandle:
         """
 
         if __DEBUG__:
-            print(f"KCube position is {float(value):.2f}")
+            logger.debug(f"[KINESIS] KCube position is {float(value):.2f}")
 
         value = Decimal(value)
         self.kcube.MoveTo(value, 60000)
@@ -126,7 +128,7 @@ class KcubeHandle:
         )  # gets decimal values !!!
 
         if __DEBUG__:
-            print(f"KCube position is {value:.2f}")
+            logger.debug(f"[KINESIS] KCube position is {value:.2f}")
 
         position = float(value)
         return position
@@ -156,7 +158,7 @@ class KcubeHandle:
             case "slider_control":  # for slider control, faster response is necessary
                 velocity = 1000
             case _:
-                print("Invalid velocity param command given")
+                logger.debug("[KINESIS] Invalid velocity param command given")
 
         # set the desired velocity params
         self.kcube.SetVelocityParams(Decimal(velocity), Decimal(velocity))
@@ -171,12 +173,12 @@ class KcubeHandle:
         if self.stage_enabled is True:
             self.kcube.DisableDevice()
             if __DEBUG__:
-                print("KCube disabled")
+                logger.debug("[KINESIS] KCube disabled")
 
         else:
             self.kcube.EnableDevice()
             if __DEBUG__:
-                print("KCube enabled")
+                logger.debug("[KINESIS] KCube enabled")
 
     def disconnect(self) -> None:
         """
@@ -188,4 +190,4 @@ class KcubeHandle:
         self.stage_enabled = False
         self.kcube.Disconnect(True)
         if __DEBUG__:
-            print("KCube disconnected")
+            logger.debug("[KINESIS] KCube disconnected")

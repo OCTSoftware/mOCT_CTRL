@@ -2,6 +2,8 @@ import os
 import shutil
 import time
 import threading
+import logging
+logger = logging.getLogger(__name__)
 
 
 class OctImaging:
@@ -41,31 +43,31 @@ class OctImaging:
         self, dest_dir, nbr_of_records, delay_between_rec, nbr_of_bscans
     ):
         try:
-            print("Starting OCT recording")
+            logger.debug("[OCT_IMAGING] Starting OCT recording")
 
             os.makedirs(dest_dir, exist_ok=True)
 
             for i in range(nbr_of_records):
                 if self.stop_requested:
-                    print("Recording stopped.")
+                    logger.debug("[OCT_IMAGING] Recording stopped.")
                     return
 
-                print(f"Recording {i + 1}/{nbr_of_records}")
+                logger.debug(f"[OCT_IMAGING] Recording {i + 1}/{nbr_of_records}")
 
                 elapsed = 0
                 while elapsed < delay_between_rec:
                     if self.stop_requested:
-                        print("Recording stopped.")
+                        logger.debug("[OCT_IMAGING] Recording stopped.")
                         return
 
                     time.sleep(0.1)
                     elapsed += 0.1
 
-            print("Recording finished.")
+            logger.debug("[OCT_IMAGING] Recording finished.")
 
         except Exception as exc:
             self.last_error = exc
-            print(f"OCT recording failed: {exc}")
+            logger.debug(f"[OCT_IMAGING] OCT recording failed -> {e}")
 
         finally:
             self.worker = None

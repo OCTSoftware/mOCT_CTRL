@@ -1,4 +1,6 @@
 from driver.nkt import NktHandle
+import logging
+logger = logging.getLogger(__name__)
 
 
 class NktController:
@@ -14,7 +16,7 @@ class NktController:
             try:
                 self.dev = NktHandle(config.get("nkt_device"))
             except Exception as e:
-                print("NKT initialization failed:", e)
+                logger.debug(f"[NKT_CONTROLLER] NKT initialization failed -> {e}")
                 self.dev = None
 
     def attach_app(self, app):

@@ -5,7 +5,8 @@ from controllers.oct_controller import OctController
 
 
 class RecordingFrame(ctk.CTkFrame):
-    def __init__(self, parent):
+    
+    def __init__(self, parent, config):
 
         super().__init__(parent)
 

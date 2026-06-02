@@ -6,6 +6,8 @@ Controller wrapper for the serial stepper driver.
 
 from driver.stepper import StepperDriver
 from models.stepper_status import StepperStatus
+import logging
+logger = logging.getLogger(__name__)
 
 
 class StepperController:
@@ -20,7 +22,7 @@ class StepperController:
         self.status = StepperStatus()
 
         self.status_callback = None
-        print("CALLBACK:", self.status_callback)
+        logger.debug(f"[STEPPER] CALLBACK: {self.status_callback}")
 
         self.driver = StepperDriver(
             callbacks={
@@ -53,7 +55,7 @@ class StepperController:
     def _log(self, message: str, level: str = "info"):
         """Internal log callback."""
 
-        print(f"[STEPPER][{level.upper()}] {message}")
+        logger.debug(f"[STEPPER] [STEPPER][{level.upper()}] {message}")
 
     def _status_update(self, data):
         """Handle status updates from the driver."""
@@ -61,9 +63,9 @@ class StepperController:
         if self.state is not None:
             self.state.stepper_status = data
 
-        print(f"[STEPPER][STATUS] {data}")
+        logger.debug(f"[STEPPER] [STEPPER][STATUS] {data}")
 
     def _error(self, message: str):
         """Handle driver errors."""
 
-        print(f"[STEPPER][ERROR] {message}")
+        logger.debug(f"[STEPPER] [STEPPER][ERROR] {message}")
