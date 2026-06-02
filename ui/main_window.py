@@ -3,9 +3,10 @@ from ui.nidaq_frame import NidaqFrame
 from ui.kcube_frame import KcubeFrame
 from ui.nkt_frame import NktFrame
 from ui.stepper_frame import StepperFrame
-from ui.sync_frame import SyncFrame
 from ui.recording_frame import RecordingFrame
 from ui.footer_frame import FooterFrame
+import logging
+logger = logging.getLogger(__name__)
 
 
 class MainWindow(ctk.CTk):
@@ -16,7 +17,6 @@ class MainWindow(ctk.CTk):
         nidaq_controllers,
         kcube,
         nkt,
-        sync,
         stepper,
         sync_controller,
         record,
@@ -45,12 +45,8 @@ class MainWindow(ctk.CTk):
             NktFrame(self, nkt, config).grid(
                 row=0, column=3, padx=5, pady=5, sticky="nw"
             )
-        if sync:
-            SyncFrame(self, sync, config).grid(
-                row=1, column=0, columnspan=1, padx=5, pady=5, sticky="nw"
-            )
         if record:
-            RecordingFrame(self, record, config).grid(
+            RecordingFrame(self, record).grid(
                 row=1, column=1, padx=5, pady=5, sticky="nw"
             )
 
@@ -64,6 +60,6 @@ class MainWindow(ctk.CTk):
             try:
                 ctrl.close()
             except Exception as e:
-                print(e)
+                logger.debug(f"[MAIN_WINDOW] -> {e}")
 
         self.destroy()

@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger(__name__)
 """
 fileIO.py
 
@@ -28,11 +30,11 @@ class FILEIO:
                         return value.strip()
 
         except FileNotFoundError:
-            print(f"File {filename} not found.")
+            logger.debug(f"[FILEIO] File {filename} not found.")
             return None
 
-        except OSError as exc:
-            print(f"Error reading {filename}: {exc}")
+        except OSError as e:
+            logger.debug(f"[FILEIO] Error reading {filename} -> {e}")
             return None
 
         return None

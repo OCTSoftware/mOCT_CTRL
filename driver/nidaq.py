@@ -9,6 +9,8 @@ m.ahrens@uni-luebeck.de
 
 import nidaqmx
 import nidaqmx.task
+import logging
+logger = logging.getLogger(__name__)
 
 __DEBUG__ = False
 
@@ -40,8 +42,8 @@ class NidaqHandle:
         ai = device + "/" + ai_channel
 
         if __DEBUG__:
-            print("Analog out channel is", ao)
-            print("Analog in  channel is", ai)
+            logger.debug(f"[NIDAQ] Analog out channel is {ao}")
+            logger.debug(f"[NIDAQ] Analog in  channel is {ai}")
 
         try:
             self.task_out = nidaqmx.Task()
@@ -52,17 +54,17 @@ class NidaqHandle:
             self.task_in.ai_channels.add_ai_voltage_chan(ai)
 
             if __DEBUG__:
-                print("Initialize nidaq control")
+                logger.debug("[NIDAQ] Initialize nidaq control")
 
         except Exception as e:
-            print(f"An exception occurred {e}\n")
-            print("self.task_out = None, self.task_in = None")
+            logger.debug(f"[NIDAQ] An exception occurred -> {e}")
+            logger.debug("[NIDAQ] self.task_out = None, self.task_in = None")
             self.task_out = None
             self.task_in = None
             raise
 
         except Exception as e:
-            print(f"An exception occurred {e}")
+            logger.debug(f"[NIDAQ] An exception occurred -> {e}")
 
     def set_position(self, analog_out_value: float) -> None:
         """
@@ -76,8 +78,8 @@ class NidaqHandle:
         analog_in_value = self.task_in.read()
 
         if __DEBUG__:
-            print(f"Send data: {analog_out_value:f}")
-            print(f"Acquired data: {analog_in_value:f}")
+            logger.debug(f"[NIDAQ] Send data: {analog_out_value:f}")
+            logger.debug(f"[NIDAQ] Acquired data: {analog_in_value:f}")
 
     def get_position(self) -> float:
         """
@@ -94,7 +96,7 @@ class NidaqHandle:
         analog_in_value = self.task_in.read()
 
         if __DEBUG__:
-            print(f"Acquired data: {analog_in_value:f}")
+            logger.debug(f"[NIDAQ] Acquired data: {analog_in_value:f}")
 
         return analog_in_value
 
@@ -114,4 +116,4 @@ class NidaqHandle:
             pass
 
         if __DEBUG__:
-            print("Close nidaq control")
+            logger.debug("[NIDAQ] Close nidaq control")

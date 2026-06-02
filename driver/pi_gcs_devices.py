@@ -16,6 +16,8 @@ from time import sleep
 from typing import NamedTuple
 from pipython import GCSDevice, pitools
 from pipython import GCSError, gcserror
+import logging
+logger = logging.getLogger(__name__)
 
 
 class StageStatus(NamedTuple):
@@ -33,7 +35,7 @@ class PIGCSHandle:
 
         self.pidevice = None
         self.axes = ""
-        print("\n")
+        logger.debug("[PI_GCS_DEVICES]")
 
     def connect(self, comport: str) -> int:
         """Connect device"""
@@ -43,28 +45,28 @@ class PIGCSHandle:
 
         try:
             port = int(comport)
-            print(f"Connecting to COM{port} ...")
+            logger.debug(f"[PI_GCS_DEVICES] Connecting to COM{port}")
             self.pidevice.OpenRS232DaisyChain(comport=port, baudrate=115200)
             dcid = self.pidevice.dcid
             self.pidevice.ConnectDaisyChainDevice(1, dcid)
 
             idn = self.pidevice.qIDN()
-            print(f"Device {idn} connected ...")
+            logger.debug(f"[PI_GCS_DEVICES] Device {idn} connected")
 
             self.axes = ["1"]  # Setup  axis 1
             pitools.enableaxes(self.pidevice, "1")  # Enable axis 1
             pitools.setservo(self.pidevice, "1", True)  # Turn servo ON for axis 1
 
-            print("Axes 1 connected ...")
+            logger.debug("[PI_GCS_DEVICES] Axes 1 connected")
             status = 1
 
         except GCSError as exc:
-            print(f"COM9 GCS failed: {exc}")
+            logger.debug(f"[PI_GCS_DEVICES] COM9 GCS failed -> {e}")
             status = -1
             return status
 
         except OSError as exc:
-            print(f"COM9 port failed: {exc}")
+            logger.debug(f"[PI_GCS_DEVICES] COM9 port failed -> {e}")
             status = -2
             return status
         status = 2
@@ -77,7 +79,7 @@ class PIGCSHandle:
         self.pidevice.gcscommands.FNL(self.axes)
         while not all(pitools.ontarget(self.pidevice, self.axes).values()):
             sleep(0.05)
-        print("Servo reached negative limit")
+        logger.debug("[PI_GCS_DEVICES] Servo reached negative limit")
 
     def move_abs(self, absolut_position) -> StageStatus[int, float]:
         """
@@ -156,4 +158,4 @@ class PIGCSHandle:
         Disconnect device
         """
         self.pidevice.gcscommands.CloseConnection()
-        print("Device disconnected ...")
+        logger.debug("[PI_GCS_DEVICES] Device disconnected")

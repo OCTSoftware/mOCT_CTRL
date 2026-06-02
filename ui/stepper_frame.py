@@ -5,6 +5,8 @@ import tkinter as tk
 import serial.tools.list_ports
 
 from utils.led import led
+import logging
+logger = logging.getLogger(__name__)
 
 
 class StepperFrame(ctk.CTkFrame):
@@ -13,9 +15,9 @@ class StepperFrame(ctk.CTkFrame):
         super().__init__(parent)
 
         self.stepper = stepper
-        print(type(self.stepper))
+        logger.debug("[STEPPER_FRAME] type(self.stepper)")
         self.stepper.status_callback = self.update_status
-        print("CALLBACK SET:", self.stepper.status_callback)
+        logger.debug(f"[STEPPER_FRAME] CALLBACK SET: {self.stepper.status_callback}")
         self.config = config
 
         self.stepper_names = ["X", "Y"]

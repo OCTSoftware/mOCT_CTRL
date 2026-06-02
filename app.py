@@ -23,6 +23,8 @@ from controllers.stepper_controller import StepperDriver
 from controllers.record_manager import RecordManager
 
 from ui.main_window import MainWindow
+import logging
+logger = logging.getLogger(__name__)
 
 
 def create_app():
@@ -35,8 +37,8 @@ def create_app():
     nidaq_count = int(config.get("nidaq_count", 1))
 
     for i in range(1, nidaq_count + 1):
-        print("channel", i, config.get(f"nidaq{i}_channel"))
-        print("device", config.get("nidaq_device"))
+        logger.debug(f"[APP] [create_app] channel {i} {config.get(f'nidaq{i}_channel')}")
+        logger.debug(f"[APP] device {config.get("nidaq_device")}")
         nidaq_controllers.append(
             NidaqController(
                 config=config, state=state, ao_port=config.get(f"nidaq{i}_channel")
@@ -46,7 +48,6 @@ def create_app():
     kcube = KcubeController(config, state) if config.get_bool("using_kcube") else None
     nkt = NktController(config, state) if config.get_bool("using_nkt") else None
     stepper = StepperDriver(config, state) if config.get_bool("using_stepper") else None
-    sync = SyncManager(state, nidaq, kcube) if config.get_bool("using_sync") else None
     record = RecordManager(config, state) if config.get_bool("using_record") else None
 
     sync_controller = SyncController(nidaq_controllers, config)
@@ -64,7 +65,7 @@ def create_app():
         shutdown_done = True
 
         if nkt is not None and getattr(nkt, "dev", None):
-            print("Emergency shutdown")
+            logger.debug("[APP] Emergency shutdown")
             nkt.emergency_shutdown()
 
     atexit.register(safe_shutdown)
@@ -83,7 +84,6 @@ def create_app():
         nidaq_controllers,
         kcube,
         nkt,
-        sync,
         stepper,
         sync_controller,
         record,

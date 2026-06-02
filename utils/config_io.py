@@ -1,3 +1,5 @@
+import logging
+logger = logging.getLogger(__name__)
 class CONFIG_IO:
     @staticmethod
     def read_value(path, key, default=None):
@@ -99,7 +101,7 @@ class CONFIG_IO:
                     )
 
         except Exception as e:
-            print(f"[config save] failed: {e}")
+            logger.debug(f"[CONFIG_IO] [config save] failed -> {e}")
 
 
 class CheckConfig:
