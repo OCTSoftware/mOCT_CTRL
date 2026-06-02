@@ -22,7 +22,7 @@ class MainWindow(ctk.CTk):
         record,
     ):
         super().__init__()
-        self.title("mOCT CTRL Refactored")
+        self.title("mOCT CTRL 2.0")
         self.grid_columnconfigure((0, 1, 2), weight=1)
 
         self.sync_controller = sync_controller

@@ -152,7 +152,7 @@ class NidaqFrame(ctk.CTkFrame):
         super().__init__(parent)
 
         ctk.CTkLabel(self, text="NIDAQ", font=("Arial", 18, "bold")).grid(
-            row=0, column=0, columnspan=max(1, len(controllers)), pady=(5, 10)
+            row=0, column=0, columnspan=max(1, len(controllers)), pady=(10, 10)
         )
 
         for idx, ctrl in enumerate(controllers):
