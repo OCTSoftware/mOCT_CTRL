@@ -92,6 +92,7 @@ class StepperChannelFrame(ctk.CTkFrame):
 
 
 class StepperFrame(ctk.CTkFrame):
+    
     def __init__(self, parent, stepper, config, sync_controller=None):
 
         super().__init__(parent)
@@ -99,6 +100,8 @@ class StepperFrame(ctk.CTkFrame):
         self.stepper = stepper
         self.config = config
         self.sync_controller = sync_controller
+        
+        self.stepper_connected = False
 
         self.stepper.status_callback = self.update_status
 
@@ -153,17 +156,20 @@ class StepperFrame(ctk.CTkFrame):
             width=140,
         )
         self.baud_combo.pack(padx=5, pady=2)
-
-        ctk.CTkButton(
+        
+        self.connect_button = ctk.CTkButton(
             self.comm_frame,
             text="Connect",
-            command=self.connect_stepper,
-        ).pack(padx=5, pady=2)
-
+            command=self.toggle_connection,
+            fg_color="green",
+            hover_color="dark green",
+        )        
+        self.connect_button.pack(padx=5, pady=2)
+                
         ctk.CTkButton(
             self.comm_frame,
-            text="Disconnect",
-            command=self.disconnect_stepper,
+            text="HOME",
+            command=lambda: self.send_command_home(),
         ).pack(padx=5, pady=2)
 
         ctk.CTkLabel(
@@ -204,6 +210,8 @@ class StepperFrame(ctk.CTkFrame):
             variable=self.sync_var,
             command=self.toggle_sync,
         )
+        
+        self.sync_switch.deselect()
 
         self.sync_switch.grid(
             row=1,
@@ -243,6 +251,28 @@ class StepperFrame(ctk.CTkFrame):
 
     def update_status(self, status):
         self.after(0, lambda: self._update_widgets(status))
+        
+    def toggle_connection(self):
+
+        if self.stepper_connected:
+            self.disconnect_stepper()
+        else:
+            self.connect_stepper()
+            
+    def update_connection_button(self):
+
+        if self.stepper_connected:
+            self.connect_button.configure(
+                text="Disconnect",
+                fg_color="red",
+                hover_color="#aa0000",
+            )
+        else:
+            self.connect_button.configure(
+                text="Connect",
+                fg_color="green",
+                hover_color="#006600",
+            )
 
     def _update_widgets(self, status):
 
@@ -286,17 +316,32 @@ class StepperFrame(ctk.CTkFrame):
         baud = int(self.baudrate_var.get())
 
         self.stepper.connect(port, baud)
+        
+        self.stepper_connected = True
+        self.update_connection_button()
 
         self.log(f"Connected: {port}")
 
     def disconnect_stepper(self):
 
         self.stepper.disconnect()
+        
+        self.stepper_connected = False
+        self.update_connection_button()
+    
         self.log("Disconnected")
 
     def send_command(self):
 
         cmd = self.command_var.get()
+
+        self.stepper.send_cmd(cmd)
+
+        self.log(f"CMD: {cmd}")
+            
+    def send_command_home(self):
+
+        cmd = "HOMEALL"
 
         self.stepper.send_cmd(cmd)
 

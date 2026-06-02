@@ -2,11 +2,10 @@
 
 # Select devices
 using_nkt=False
-using_kcube=True
+using_kcube=False
 using_nidaq=True
 using_stepper=True
-using_sync=True
-using_record=True
+using_record=False
 
 
 #################################### MIPOS ####################################
@@ -27,7 +26,7 @@ nidaq_max_position = 400
 nidaq_center_position = 200
 
 # Channels
-nidaq_count = 1
+nidaq_count = 2
 
 nidaq1_channel = ao0
 nidaq2_channel = ao1
