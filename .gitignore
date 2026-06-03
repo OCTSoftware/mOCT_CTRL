@@ -2,3 +2,4 @@ __pycache__/
 output/
 *.bkp
 /doc/GIT Best Practice README.pdf
+/resources/config.txt
