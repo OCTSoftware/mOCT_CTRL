@@ -214,7 +214,10 @@ class StepperFrame(ctk.CTkFrame):
             command=self.toggle_sync,
         )
         
-        self.sync_switch.deselect()
+        if self.sync_var.get():
+            self.sync_switch.select()
+        else:
+            self.sync_switch.deselect()
 
         self.sync_switch.grid(
             row=1,
@@ -284,8 +287,12 @@ class StepperFrame(ctk.CTkFrame):
 
     def toggle_sync(self):
 
+        logger.debug(f"[SYNC UI] -> {self.sync_var.get()}")
+
         if self.sync_controller:
-            self.sync_controller.set_enabled(self.sync_var.get())
+            self.sync_controller.set_enabled(
+                self.sync_var.get()
+            )
 
     def get_ports(self):
 

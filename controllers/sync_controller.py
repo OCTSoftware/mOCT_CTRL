@@ -76,6 +76,8 @@ class SyncController:
             self.nidaqs[idx].move_relative(distance)
 
     def set_enabled(self, enabled):
+        
+        logger.debug(f"[SYNC CTRL] enabled={enabled}")
 
         self.enabled = enabled
         
