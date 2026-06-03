@@ -64,7 +64,7 @@
     },
 
     "sync": {
-        "enabled": true,
+        "enabled": false,
 
         "mappings": [
             {
