@@ -4,6 +4,7 @@ logger = logging.getLogger(__name__)
 
 
 class SyncController:
+    
     def __init__(self, nidaq_controllers, config):
 
         self.nidaqs = nidaq_controllers
@@ -33,10 +34,23 @@ class SyncController:
 
         logger.debug("SYNC enabled=%s", self.enabled)
 
+        
         if not self.enabled:
             return
 
-        if not self.enabled:
+        positions = {
+            "X": status.x.position,
+            "Y": status.y.position,
+        }
+        
+        logger.debug(
+            f"[SYNC] enabled={self.enabled} "
+            f"X={status.x.position} "
+            f"Y={status.y.position}"
+        )
+
+        if getattr(self, "_last_positions", None) is None:
+            self._last_positions = positions.copy()
             return
 
         positions = {"X": status.x.position, "Y": status.y.position}
@@ -62,9 +76,13 @@ class SyncController:
             distance = delta * self.scale + self.offset
 
             logger.debug(f"[SYNC] {axis} delta={delta} move={distance}")
+            logger.debug(f"[SYNC MOVE] axis={axis} delta={delta} distance={distance}")
 
             self.nidaqs[idx].move_relative(distance)
 
     def set_enabled(self, enabled):
 
         self.enabled = enabled
+        
+        if enabled:
+            self._last_positions = None
