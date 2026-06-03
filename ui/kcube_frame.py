@@ -17,7 +17,7 @@ class KcubeFrame(ctk.CTkFrame):
         serial = self.config.get("kcube_serial_number", "unknown")
         self.kcube_sn_info = f"SN: {serial}"
 
-        self.last_selected = self.config.get("last_selected", "home")
+        self.last_selected = self.config.get("kcube", "last_selected", default="home")
 
         # original layout preserved
 

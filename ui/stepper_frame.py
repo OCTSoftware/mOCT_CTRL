@@ -9,7 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 class StepperChannelFrame(ctk.CTkFrame):
+    
     def __init__(self, parent, stepper, axis):
+        
         super().__init__(parent)
 
         self.stepper = stepper
@@ -101,6 +103,9 @@ class StepperFrame(ctk.CTkFrame):
         self.config = config
         self.sync_controller = sync_controller
         
+        saved_port = config.get("stepper", "port")
+        saved_baud = config.get("stepper", "baudrate")
+        
         self.stepper_connected = False
 
         self.stepper.status_callback = self.update_status
@@ -133,8 +138,7 @@ class StepperFrame(ctk.CTkFrame):
             text="Communication",
             font=("Arial", 16, "bold"),
         ).pack(padx=5, pady=(5, 10))
-
-        saved_port = config.get("stepper_port", "")
+                
         self.selected_port = tk.StringVar(value=saved_port)
 
         self.port_combo = ctk.CTkComboBox(
@@ -145,7 +149,6 @@ class StepperFrame(ctk.CTkFrame):
         )
         self.port_combo.pack(padx=5, pady=2)
 
-        saved_baud = config.get("stepper_baudrate", "115200")
 
         self.baudrate_var = tk.StringVar(value=str(saved_baud))
 

@@ -13,8 +13,6 @@ from pathlib import Path
 from core.config_manager import ConfigManager
 from core.app_state import AppState
 
-from utils.config_io import CONFIG_IO
-
 from controllers.nidaq_controller import NidaqController
 from controllers.kcube_controller import KcubeController
 from controllers.nkt_controller import NktController
@@ -24,31 +22,39 @@ from controllers.record_manager import RecordManager
 
 from ui.main_window import MainWindow
 import logging
+
 logger = logging.getLogger(__name__)
 
 
 def create_app():
 
-    config = ConfigManager(Path(__file__).resolve().parent / "resources" / "config.txt")
+    config = ConfigManager(
+        Path(__file__).resolve().parent
+        / "resources"
+        / "config.json"
+    )
 
     state = AppState()
 
     nidaq_controllers = []
-    nidaq_count = int(config.get("nidaq_count", 1))
 
-    for i in range(1, nidaq_count + 1):
-        logger.debug(f"[APP] [create_app] channel {i} {config.get(f'nidaq{i}_channel')}")
-        logger.debug(f"[APP] device {config.get("nidaq_device")}")
+    logger.debug(f"[APP] device {config.get('nidaq', 'device')}")
+ 
+    for channel in config.get("nidaq", "channels"):
+
         nidaq_controllers.append(
             NidaqController(
-                config=config, state=state, ao_port=config.get(f"nidaq{i}_channel")
+                config=config,
+                state=state,
+                ao_port=channel["ao"],
+                ai_port=channel["ai"],
             )
         )
 
-    kcube = KcubeController(config, state) if config.get_bool("using_kcube") else None
-    nkt = NktController(config, state) if config.get_bool("using_nkt") else None
-    stepper = StepperDriver(config, state) if config.get_bool("using_stepper") else None
-    record = RecordManager(config, state) if config.get_bool("using_record") else None
+    kcube = KcubeController(config, state) if config.get_bool("devices", "kcube") else None
+    nkt = NktController(config, state) if config.get_bool("devices", "nkt") else None
+    stepper = StepperDriver(config, state) if config.get_bool("devices", "stepper") else None
+    record = RecordManager(config, state) if config.get_bool("devices", "record") else None
 
     sync_controller = SyncController(nidaq_controllers, config)
     stepper.sync_controller = sync_controller

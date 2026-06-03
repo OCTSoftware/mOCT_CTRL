@@ -13,7 +13,7 @@ class KcubeController:
         self.config = config
         self.dev = None
 
-        serial_value = config.get("kcube_serial_number")
+        serial_value = config.get("kcube", "serial_number")
 
         try:
             self.serial_number = str(int(serial_value))

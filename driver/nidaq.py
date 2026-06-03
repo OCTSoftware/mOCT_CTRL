@@ -12,9 +12,6 @@ import nidaqmx.task
 import logging
 logger = logging.getLogger(__name__)
 
-__DEBUG__ = False
-
-
 class NidaqHandle:
     """class NidaqHandle"""
 
@@ -33,28 +30,32 @@ class NidaqHandle:
             device     (str): Device name of the NI-DAQ modul, e.g. 'Dev1'
             ao_channel (str): Analog out channel, e.g. 'ao1'
             ai_channel (str): Analog in  channel, e.g. 'ai1'
+            min_out  (float): Analog value minimal out
+            max_out  (float): Analog value maximal out
 
         Return:
             NidaqHandle(device, ao_channel, ai_channel)
         """
 
-        ao = device + "/" + ao_channel
-        ai = device + "/" + ai_channel
+        self.device = device
+        logger.debug(f"NIDAQ DEV = {self.device}")
 
-        if __DEBUG__:
-            logger.debug(f"[NIDAQ] Analog out channel is {ao}")
-            logger.debug(f"[NIDAQ] Analog in  channel is {ai}")
+        self.ao = self.device + "/" + ao_channel
+        self.ai = self.device + "/" + ai_channel
+
+        
+        logger.debug(f"[NIDAQ] Analog out channel is {self.ao}")
+        logger.debug(f"[NIDAQ] Analog in  channel is {self.ai}")
 
         try:
             self.task_out = nidaqmx.Task()
             self.task_out.ao_channels.add_ao_voltage_chan(
-                ao, min_val=min_out, max_val=max_out
+                self.ao, min_val=min_out, max_val=max_out
             )
             self.task_in = nidaqmx.Task()
-            self.task_in.ai_channels.add_ai_voltage_chan(ai)
+            self.task_in.ai_channels.add_ai_voltage_chan(self.ai)
 
-            if __DEBUG__:
-                logger.debug("[NIDAQ] Initialize nidaq control")
+            logger.debug("[NIDAQ] Initialize nidaq control")
 
         except Exception as e:
             logger.debug(f"[NIDAQ] An exception occurred -> {e}")
@@ -77,9 +78,8 @@ class NidaqHandle:
         self.task_out.write(analog_out_value, auto_start=True)
         analog_in_value = self.task_in.read()
 
-        if __DEBUG__:
-            logger.debug(f"[NIDAQ] Send data: {analog_out_value:f}")
-            logger.debug(f"[NIDAQ] Acquired data: {analog_in_value:f}")
+        logger.debug(f"[NIDAQ] Send data: {analog_out_value:f}")
+        logger.debug(f"[NIDAQ] Acquired data: {analog_in_value:f}")
 
     def get_position(self) -> float:
         """
@@ -95,8 +95,7 @@ class NidaqHandle:
 
         analog_in_value = self.task_in.read()
 
-        if __DEBUG__:
-            logger.debug(f"[NIDAQ] Acquired data: {analog_in_value:f}")
+        logger.debug(f"[NIDAQ] Acquired data: {analog_in_value:f}")
 
         return analog_in_value
 
@@ -115,5 +114,4 @@ class NidaqHandle:
         except Exception:
             pass
 
-        if __DEBUG__:
-            logger.debug("[NIDAQ] Close nidaq control")
+        logger.debug("[NIDAQ] Close nidaq control")
