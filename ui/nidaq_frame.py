@@ -4,22 +4,22 @@ logger = logging.getLogger(__name__)
 
 
 class NidaqChannelFrame(ctk.CTkFrame):
+    
     def __init__(self, parent, ctrl, config, title):
+        
         super().__init__(parent)
 
         self.ctrl = ctrl
+        
+        self.position = getattr(ctrl, "position", 0.0)
 
-        self.min_position = float(config.get("nidaq_min_position", 0))
-
-        self.max_position = float(config.get("nidaq_max_position", 400))
-
-        self.center_position = float(config.get("nidaq_center_position", 200))
-
-        self.position = float(getattr(ctrl, "position", self.center_position))
-
-        large = int(config.get("nidaq_jog_large", 50))
-        medium = int(config.get("nidaq_jog_medium", 10))
-        small = int(config.get("nidaq_jog_small", 1))
+        self.min_position = float(config.get("nidaq", "position", "min"))
+        self.max_position = float(config.get("nidaq", "position", "max"))
+        self.center_position = float(config.get("nidaq", "position", "center"))
+        
+        large = int(config.get("nidaq", "jog", "large"))
+        medium = int(config.get("nidaq", "jog", "medium"))
+        small = int(config.get("nidaq", "jog", "small"))
 
         self.jog_steps = [large, medium, small]
 
@@ -148,7 +148,9 @@ class NidaqChannelFrame(ctk.CTkFrame):
 
 
 class NidaqFrame(ctk.CTkFrame):
+    
     def __init__(self, parent, controllers, config):
+        
         super().__init__(parent)
 
         ctk.CTkLabel(self, text="NIDAQ", font=("Arial", 18, "bold")).grid(

@@ -14,7 +14,7 @@ class NktController:
 
         if config.get_bool("using_nkt"):
             try:
-                self.dev = NktHandle(config.get("nkt_device"))
+                self.dev = NktHandle(config.get("nkt", "device"))
             except Exception as e:
                 logger.debug(f"[NKT_CONTROLLER] NKT initialization failed -> {e}")
                 self.dev = None

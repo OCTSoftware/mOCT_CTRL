@@ -1,22 +1,53 @@
-from utils.config_io import CONFIG_IO
+import json
 
 
 class ConfigManager:
+
     def __init__(self, path):
+
         self.path = path
 
-    def get(self, key, default=None):
-        return CONFIG_IO.read_value(self.path, key, default)
+        with open(path, "r", encoding="utf-8") as f:
+            self.data = json.load(f)
 
-    def get_bool(self, key):
-        value = CONFIG_IO.read_value(self.path, key, "true")
-        return str(value).strip().lower() == "true"
+    def get(self, *keys, default=None):
 
-    def get_float(self, key, default=0.0):
+        value = self.data
+
         try:
-            return float(CONFIG_IO.read_value(self.path, key, default))
-        except (TypeError, ValueError):
+
+            for key in keys:
+                value = value[key]
+
+            return value
+
+        except (KeyError, TypeError):
+
             return default
 
-    def set(self, key, value):
-        CONFIG_IO.write_value(self.path, key, value)
+    def get_bool(self, *keys):
+
+        return bool(self.get(*keys, default=False))
+
+    def set(self, *keys, value):
+
+        data = self.data
+
+        for key in keys[:-1]:
+
+            if key not in data:
+                data[key] = {}
+
+            data = data[key]
+
+        data[keys[-1]] = value
+
+    def save(self):
+
+        with open(self.path, "w", encoding="utf-8") as f:
+
+            json.dump(
+                self.data,
+                f,
+                indent=4
+            )

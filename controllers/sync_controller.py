@@ -9,24 +9,19 @@ class SyncController:
 
         self.nidaqs = nidaq_controllers
 
-        self.enabled = config.get_bool("sync_enabled")
+        self.enabled = config.get_bool("sync", "enabled")
 
-        self.scale = float(config.get("sync_scale", 1.0))
+        self.scale = float(config.get("sync", "scale"))
 
-        self.offset = float(config.get("sync_offset", 0.0))
+        self.offset = float(config.get("sync", "offset"))
 
         self.axis_map = {}
 
-        i = 1
+        for mapping in config.get("sync", "mappings"):
 
-        while config.get(f"sync{i}_axis"):
-            axis = config.get(f"sync{i}_axis")
-
-            nidaq_idx = int(config.get(f"sync{i}_nidaq")) - 1
-
+            axis = mapping["axis"]
+            nidaq_idx = mapping["nidaq"] - 1
             self.axis_map[axis] = nidaq_idx
-
-            i += 1
 
         self.last_positions = {}
 
