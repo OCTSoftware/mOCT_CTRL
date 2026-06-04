@@ -236,7 +236,7 @@ class StepperDriver:
                 OSError,
                 AttributeError,
                 TypeError,
-            ) as exc:
+            ) as e:
                 if self.is_connected:
                     self._error(f"Serial read error -> {e}")
 

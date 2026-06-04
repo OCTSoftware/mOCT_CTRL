@@ -61,3 +61,11 @@ class NidaqController:
         logger.debug(f"[NIDAQ CTRL] relative {delta}")
 
         self.move_absolute(self.position + delta)
+
+    def get_position(self):
+
+        position = self.dev.get_position()
+
+        logger.debug(f"[NIDAQ CTRL] get position {position}")
+        
+        return position
