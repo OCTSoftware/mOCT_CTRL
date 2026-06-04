@@ -1,3 +1,5 @@
+from driver.calibration import steps_to_um, um_to_volts
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -10,8 +12,6 @@ class SyncController:
         self.nidaqs = nidaq_controllers
 
         self.enabled = config.get_bool("sync", "enabled")
-
-        self.scale = float(config.get("sync", "scale"))
 
         self.offset = float(config.get("sync", "offset"))
 
@@ -55,25 +55,32 @@ class SyncController:
             return
 
         for axis, idx in self.axis_map.items():
+
             if idx >= len(self.nidaqs):
                 continue
 
             current = positions[axis]
+
             previous = self._last_positions.get(axis, current)
 
-            delta = current - previous
+            delta_steps = current - previous
 
             self._last_positions[axis] = current
 
-            if delta == 0:
+            if delta_steps == 0:
                 continue
 
-            distance = delta * self.scale + self.offset
+            delta_um = steps_to_um(delta_steps)
 
-            logger.debug(f"[SYNC] {axis} delta={delta} move={distance}")
-            logger.debug(f"[SYNC MOVE] axis={axis} delta={delta} distance={distance}")
+            logger.debug(
+                f"[SYNC MOVE] "
+                f"axis={axis} "
+                f"steps={delta_steps} "
+                f"um={delta_um:.3f} "
+                f"voltage={delta_um:.4f}"
+            )
 
-            self.nidaqs[idx].move_relative(distance)
+            self.nidaqs[idx].move_relative(delta_um)
 
     def set_enabled(self, enabled):
         

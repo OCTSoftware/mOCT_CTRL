@@ -207,27 +207,34 @@ class StepperFrame(ctk.CTkFrame):
             value=(sync_controller.enabled if sync_controller else False)
         )
 
-        self.sync_switch = ctk.CTkSwitch(
+        sync_frame = ctk.CTkFrame(
             self,
+            fg_color="transparent"
+        )
+
+        sync_frame.grid(
+            row=1,
+            column=0,
+            columnspan=2,
+            padx=5,
+            pady=5,
+            sticky="ew"
+        )
+
+        self.sync_switch = ctk.CTkSwitch(
+            sync_frame,
             text="NIDAQ Sync",
             variable=self.sync_var,
             command=self.toggle_sync,
         )
-        
-        if self.sync_var.get():
-            self.sync_switch.select()
-        else:
-            self.sync_switch.deselect()
 
-        self.sync_switch.grid(
-            row=1,
-            column=0,
-            padx=5,
-            pady=5,
-            sticky="w",
+        self.sync_switch.pack(
+            side="left",
+            padx=(0, 10)
         )
-
+        
         self.stepper_container = ctk.CTkFrame(self.stepper_frame)
+        
         self.stepper_container.grid(
             row=1,
             column=1,
@@ -256,6 +263,7 @@ class StepperFrame(ctk.CTkFrame):
             self.channels[axis] = channel
 
     def update_status(self, status):
+        
         self.after(0, lambda: self._update_widgets(status))
         
     def toggle_connection(self):
