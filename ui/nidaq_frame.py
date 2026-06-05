@@ -36,15 +36,15 @@ class NidaqChannelFrame(ctk.CTkFrame):
         # Positive buttons
 
         ctk.CTkButton(
-            self, text="+50", width=50, command=lambda: self.move_relative(50)
+            self, text=f"+{large}", width=50, command=lambda: self.move_relative(large)
         ).grid(row=2, column=0, padx=2, pady=2)
 
         ctk.CTkButton(
-            self, text="+10", width=50, command=lambda: self.move_relative(10)
+            self, text=f"+{medium}", width=50, command=lambda: self.move_relative(medium)
         ).grid(row=2, column=1, padx=2, pady=2)
 
         ctk.CTkButton(
-            self, text="+1", width=50, command=lambda: self.move_relative(1)
+            self, text=f"+{small}", width=50, command=lambda: self.move_relative(small)
         ).grid(row=2, column=2, padx=2, pady=2)
 
         # Slider
@@ -68,15 +68,15 @@ class NidaqChannelFrame(ctk.CTkFrame):
         # Negative buttons
 
         ctk.CTkButton(
-            self, text="-1", width=50, command=lambda: self.move_relative(-1)
+            self, text=f"-{small}", width=50, command=lambda: self.move_relative(-small)
         ).grid(row=4, column=0, padx=2, pady=2)
 
         ctk.CTkButton(
-            self, text="-10", width=50, command=lambda: self.move_relative(-10)
+            self, text=f"-{medium}", width=50, command=lambda: self.move_relative(-medium)
         ).grid(row=4, column=1, padx=2, pady=2)
 
         ctk.CTkButton(
-            self, text="-50", width=50, command=lambda: self.move_relative(-50)
+            self, text=f"-{large}", width=50, command=lambda: self.move_relative(-large)
         ).grid(row=4, column=2, padx=2, pady=2)
 
         # Go to position

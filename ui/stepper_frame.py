@@ -25,10 +25,10 @@ class StepperChannelFrame(ctk.CTkFrame):
         ).pack(padx=5, pady=(5, 10))
 
         self.state_label = ctk.CTkLabel(self, text="State: ---")
-        self.state_label.pack(padx=5, pady=2)
+        self.state_label.pack(padx=5, pady=0)
 
         self.position_label = ctk.CTkLabel(self, text="Pos: ---")
-        self.position_label.pack(padx=5, pady=2)
+        self.position_label.pack(padx=5, pady=0)
 
         limit_frame = ctk.CTkFrame(self, fg_color="transparent")
         limit_frame.pack(padx=5, pady=2)
@@ -130,6 +130,19 @@ class StepperFrame(ctk.CTkFrame):
             font=("Arial", 18, "bold"),
         ).grid(row=0, column=0, padx=5, pady=(5, 10), sticky="ns")
 
+        self.sync_var = ctk.BooleanVar(
+            value=(sync_controller.enabled if sync_controller else False)
+        )
+        
+        self.sync_switch = ctk.CTkSwitch(
+            self.stepper_frame,
+            text="NIDAQ Sync",
+            font=("Arial", 18, "bold"),
+            text_color='orange',
+            variable=self.sync_var,
+            command=self.toggle_sync,
+        ).grid(row=0, column=1, padx=5, pady=(5, 10), sticky="ns")
+
         self.comm_frame = ctk.CTkFrame(self.stepper_frame)
         self.comm_frame.grid(row=1, column=0, padx=5, pady=5, sticky="ns")
 
@@ -148,7 +161,6 @@ class StepperFrame(ctk.CTkFrame):
             width=140,
         )
         self.port_combo.pack(padx=5, pady=2)
-
 
         self.baudrate_var = tk.StringVar(value=str(saved_baud))
 
@@ -203,10 +215,6 @@ class StepperFrame(ctk.CTkFrame):
         )
         self.status_box.pack(padx=5, pady=(10, 5))
 
-        self.sync_var = ctk.BooleanVar(
-            value=(sync_controller.enabled if sync_controller else False)
-        )
-
         sync_frame = ctk.CTkFrame(
             self,
             fg_color="transparent"
@@ -219,18 +227,6 @@ class StepperFrame(ctk.CTkFrame):
             padx=5,
             pady=5,
             sticky="ew"
-        )
-
-        self.sync_switch = ctk.CTkSwitch(
-            sync_frame,
-            text="NIDAQ Sync",
-            variable=self.sync_var,
-            command=self.toggle_sync,
-        )
-
-        self.sync_switch.pack(
-            side="left",
-            padx=(0, 10)
         )
         
         self.stepper_container = ctk.CTkFrame(self.stepper_frame)
