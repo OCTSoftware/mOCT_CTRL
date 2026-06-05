@@ -9,9 +9,9 @@ logger = logging.getLogger(__name__)
 
 
 class StepperChannelFrame(ctk.CTkFrame):
-    
+
     def __init__(self, parent, stepper, axis):
-        
+
         super().__init__(parent)
 
         self.stepper = stepper
@@ -94,7 +94,7 @@ class StepperChannelFrame(ctk.CTkFrame):
 
 
 class StepperFrame(ctk.CTkFrame):
-    
+
     def __init__(self, parent, stepper, config, sync_controller=None):
 
         super().__init__(parent)
@@ -102,14 +102,17 @@ class StepperFrame(ctk.CTkFrame):
         self.stepper = stepper
         self.config = config
         self.sync_controller = sync_controller
-        
+
         saved_port = config.get("stepper", "port")
         saved_baud = config.get("stepper", "baudrate")
-        
+
         self.stepper_connected = False
+        self.save_mode = False
 
         self.stepper.status_callback = self.update_status
 
+        self.current_x = 0
+        self.current_y = 0
         self.stepper_names = ["X", "Y"]
 
         logger.debug(
@@ -133,7 +136,7 @@ class StepperFrame(ctk.CTkFrame):
         self.sync_var = ctk.BooleanVar(
             value=(sync_controller.enabled if sync_controller else False)
         )
-        
+
         self.sync_switch = ctk.CTkSwitch(
             self.stepper_frame,
             text="NIDAQ Sync",
@@ -151,7 +154,7 @@ class StepperFrame(ctk.CTkFrame):
             text="Communication",
             font=("Arial", 16, "bold"),
         ).pack(padx=5, pady=(5, 10))
-                
+
         self.selected_port = tk.StringVar(value=saved_port)
 
         self.port_combo = ctk.CTkComboBox(
@@ -171,16 +174,16 @@ class StepperFrame(ctk.CTkFrame):
             width=140,
         )
         self.baud_combo.pack(padx=5, pady=2)
-        
+
         self.connect_button = ctk.CTkButton(
             self.comm_frame,
             text="Connect",
             command=self.toggle_connection,
             fg_color="green",
             hover_color="dark green",
-        )        
+        )
         self.connect_button.pack(padx=5, pady=2)
-                
+
         ctk.CTkButton(
             self.comm_frame,
             text="HOME",
@@ -215,6 +218,30 @@ class StepperFrame(ctk.CTkFrame):
         )
         self.status_box.pack(padx=5, pady=(10, 5))
 
+        self.btn_save = ctk.CTkButton(
+            self.comm_frame,
+            text="Save",
+            command=lambda: self.enable_save_mode(),
+        )
+
+        self.btn_save.pack(padx=5, pady=2)
+
+        self.btn_pos1 = ctk.CTkButton(
+            self.comm_frame,
+            text="Position 1",
+            command=lambda: self.handle_position(1),
+        )
+
+        self.btn_pos1.pack(padx=5, pady=2)
+
+        self.btn_pos2 = ctk.CTkButton(
+            self.comm_frame,
+            text="Position 2",
+            command=lambda: self.handle_position(2),
+        )
+
+        self.btn_pos2.pack(padx=5, pady=2)
+
         sync_frame = ctk.CTkFrame(
             self,
             fg_color="transparent"
@@ -228,9 +255,9 @@ class StepperFrame(ctk.CTkFrame):
             pady=5,
             sticky="ew"
         )
-        
+
         self.stepper_container = ctk.CTkFrame(self.stepper_frame)
-        
+
         self.stepper_container.grid(
             row=1,
             column=1,
@@ -252,23 +279,26 @@ class StepperFrame(ctk.CTkFrame):
                 row=idx,
                 column=0,
                 padx=5,
-                pady=5,
+                pady=10,
                 sticky="n",
             )
 
             self.channels[axis] = channel
 
     def update_status(self, status):
-        
+
         self.after(0, lambda: self._update_widgets(status))
-        
+
+        self.current_x = status.x.position
+        self.current_y = status.y.position
+
     def toggle_connection(self):
 
         if self.stepper_connected:
             self.disconnect_stepper()
         else:
             self.connect_stepper()
-            
+
     def update_connection_button(self):
 
         if self.stepper_connected:
@@ -330,7 +360,7 @@ class StepperFrame(ctk.CTkFrame):
         baud = int(self.baudrate_var.get())
 
         self.stepper.connect(port, baud)
-        
+
         self.stepper_connected = True
         self.update_connection_button()
 
@@ -339,10 +369,10 @@ class StepperFrame(ctk.CTkFrame):
     def disconnect_stepper(self):
 
         self.stepper.disconnect()
-        
+
         self.stepper_connected = False
         self.update_connection_button()
-    
+
         self.log("Disconnected")
 
     def send_command(self):
@@ -352,7 +382,7 @@ class StepperFrame(ctk.CTkFrame):
         self.stepper.send_cmd(cmd)
 
         self.log(f"CMD: {cmd}")
-            
+
     def send_command_home(self):
 
         cmd = "HOMEALL"
@@ -360,6 +390,64 @@ class StepperFrame(ctk.CTkFrame):
         self.stepper.send_cmd(cmd)
 
         self.log(f"CMD: {cmd}")
+
+    def send_move_to_position(self, positions):
+
+        for key, value in positions.items():
+
+            cmd =  f"MOVE {key} {value}"
+
+            self.stepper.send_cmd(cmd)
+
+            self.log(f"CMD: {cmd}")
+
+    def enable_save_mode(self):
+        self.save_mode = True
+
+        self.btn_save.configure(
+            fg_color="orange",
+            hover_color="dark orange"
+        )
+
+    def handle_position(self, index: int):
+
+        if self.save_mode:
+            self.save_position(index)
+
+            self.save_mode = False
+
+            self.btn_save.configure(
+                fg_color=["#3B8ED0", "#1F6AA5"],  # default CTk colors
+            )
+
+        else:
+
+            self.goto_position(index)
+
+    def save_position(self, index):
+
+        positions = self.config.get("stepper", "position", default={})
+
+        positions[f"position_{index}"] = {
+            "X": self.current_x,
+            "Y": self.current_y,
+        }
+
+        self.config.set(
+            "stepper",
+            "position",
+            value=positions
+        )
+
+        self.config.save()
+
+    def goto_position(self, index):
+
+        positions = self.config.get("stepper", "position", default=[])
+
+        position = positions[f"position_{index}"]
+
+        self.send_move_to_position(position)
 
     def log(self, message):
 

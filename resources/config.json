@@ -6,66 +6,64 @@
         "stepper": true,
         "record": false
     },
-
     "nidaq": {
         "device": "Dev1",
         "ai_port": "ai0",
-
         "output": {
             "min_voltage": 0,
             "max_voltage": 10
         },
-
         "position": {
             "min": 0,
             "max": 400,
             "center": 200
         },
-
         "channels": [
-        {
-            "ao": "ao0",
-            "ai": "ai0"
-          },
-          {
-            "ao": "ao1",
-            "ai": "ai1"
-          }
+            {
+                "ao": "ao0",
+                "ai": "ai0"
+            },
+            {
+                "ao": "ao1",
+                "ai": "ai1"
+            }
         ],
-
         "jog": {
             "large": 50,
             "medium": 10,
             "small": 1
         }
     },
-
     "kcube": {
         "serial_number": "28252775",
-
         "objectives": {
             "home": 10.0,
             "05x16": 22.43,
-            "10x03": 30.60,
+            "10x03": 30.6,
             "20x05": 34.0,
             "40x08": 0.0
         },
-
         "last_selected": "10x03"
     },
-
     "nkt": {
         "device": "COM2"
     },
-
     "stepper": {
         "port": "COM3",
-        "baudrate": 115200
+        "baudrate": 115200,
+        "position": {
+            "position_1": {
+                "X": 687,
+                "Y": 699
+            },
+            "position_2": {
+                "X": 10000,
+                "Y": 10000
+            }
+        }
     },
-
     "sync": {
         "enabled": false,
-
         "mappings": [
             {
                 "axis": "X",
@@ -76,7 +74,6 @@
                 "nidaq": 2
             }
         ],
-
         "offset": 0.0
     }
 }
