@@ -3,6 +3,7 @@ import tkinter as tk
 import serial.tools.list_ports
 import logging
 
+from driver.calibration import steps_to_um, um_to_steps
 from utils.led import led
 
 logger = logging.getLogger(__name__)
@@ -16,7 +17,7 @@ class StepperChannelFrame(ctk.CTkFrame):
 
         self.stepper = stepper
         self.axis = axis
-        self.speed_var = tk.StringVar(value="100")
+        self.speed_var = tk.StringVar(value="10")
 
         ctk.CTkLabel(
             self,
@@ -63,7 +64,9 @@ class StepperChannelFrame(ctk.CTkFrame):
 
     def update_status(self, axis_status, state_map):
 
-        self.position_label.configure(text=f"Pos: {axis_status.position}")
+        pos_mm = steps_to_um(axis_status.position)
+
+        self.position_label.configure(text=f"Pos: {pos_mm} um")
 
         self.state_label.configure(
             text=f"State: {state_map.get(axis_status.state, '?')}"
@@ -76,6 +79,8 @@ class StepperChannelFrame(ctk.CTkFrame):
 
         speed = float(self.speed_var.get())
 
+        speed = um_to_steps(speed)
+
         logger.debug(
             f"[StepperChannelFrame] [jog_positive] Axis={self.axis} Speed={speed}"
         )
@@ -85,6 +90,8 @@ class StepperChannelFrame(ctk.CTkFrame):
     def jog_negative(self):
 
         speed = float(self.speed_var.get())
+
+        speed = um_to_steps(speed)
 
         logger.debug(
             f"[StepperChannelFrame] [jog_negative] Axis={self.axis} Speed={speed}"

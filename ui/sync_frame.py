@@ -2,6 +2,7 @@ import customtkinter as ctk
 
 
 class SyncFrame(ctk.CTkFrame):
+
     def __init__(self, parent, ctrl, config):
 
         super().__init__(parent)
