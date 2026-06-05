@@ -3,8 +3,9 @@
 # =========================
 
 # Stepper:
-# 80 steps = 10 µm
-STEPS_PER_UM = 80.0 / 10.0
+# 3200 Steps == 1000 um == 1 Rev
+#   32 Steps ==   10 µm
+STEPS_PER_UM = 32.0 / 10.0
 
 # NI-DAQ:
 # 0.25 V = 10 µm
