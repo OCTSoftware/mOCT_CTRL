@@ -23,7 +23,7 @@ class StepperChannelFrame(ctk.CTkFrame):
             self,
             text=axis,
             font=("Arial", 16, "bold"),
-        ).pack(padx=5, pady=(5, 10))
+        ).pack(padx=(5,5), pady=(5, 5))
 
         self.state_label = ctk.CTkLabel(self, text="State: ---")
         self.state_label.pack(padx=5, pady=0)
@@ -34,12 +34,12 @@ class StepperChannelFrame(ctk.CTkFrame):
         limit_frame = ctk.CTkFrame(self, fg_color="transparent")
         limit_frame.pack(padx=5, pady=2)
 
-        ctk.CTkLabel(limit_frame, text="Home").grid(row=0, column=0, padx=2)
+        ctk.CTkLabel(limit_frame, text="Home").grid(row=0, column=0, padx=(5,5), pady=(5, 5))
 
         self.home_led = led(limit_frame, size=14, color_on="green")
         self.home_led.grid(row=0, column=1, padx=2)
 
-        ctk.CTkLabel(limit_frame, text="End").grid(row=0, column=2, padx=(10, 2))
+        ctk.CTkLabel(limit_frame, text="End").grid(row=0, column=2, padx=(5,5), pady=(5, 5))
 
         self.end_led = led(limit_frame, size=14, color_on="red")
         self.end_led.grid(row=0, column=3, padx=2)
@@ -48,19 +48,19 @@ class StepperChannelFrame(ctk.CTkFrame):
             self,
             textvariable=self.speed_var,
             width=120,
-        ).pack(padx=5, pady=2)
+        ).pack(padx=(5,5), pady=(5, 5))
 
         ctk.CTkButton(
             self,
             text="Jog +",
             command=self.jog_positive,
-        ).pack(padx=5, pady=2)
+        ).pack(padx=(5,5), pady=(5, 5))
 
         ctk.CTkButton(
             self,
             text="Jog -",
             command=self.jog_negative,
-        ).pack(padx=5, pady=2)
+        ).pack(padx=(5,5), pady=(5, 5))
 
     def update_status(self, axis_status, state_map):
 
@@ -128,17 +128,14 @@ class StepperFrame(ctk.CTkFrame):
 
         self.configure(fg_color="#2b2b2b")
 
-        self.grid_columnconfigure(0, weight=0)
-        self.grid_columnconfigure(1, weight=1)
-
-        self.stepper_frame = ctk.CTkFrame(self)
-        self.stepper_frame.grid(row=0, column=0, padx=5, pady=(5, 10), sticky="nsew")
+        self.stepper_frame = ctk.CTkFrame(self, fg_color="transparent")
+        self.stepper_frame.grid(row=0, column=0, padx=(5,5), pady=(5, 5), sticky="nsew")
 
         ctk.CTkLabel(
             self.stepper_frame,
             text="STEPPER",
             font=("Arial", 18, "bold"),
-        ).grid(row=0, column=0, padx=5, pady=(5, 10), sticky="ns")
+        ).grid(row=0, column=0,padx=(5,5), pady=(5, 5), sticky="nsew")
 
         self.sync_var = ctk.BooleanVar(
             value=(sync_controller.enabled if sync_controller else False)
@@ -151,16 +148,16 @@ class StepperFrame(ctk.CTkFrame):
             text_color='orange',
             variable=self.sync_var,
             command=self.toggle_sync,
-        ).grid(row=0, column=1, padx=5, pady=(5, 10), sticky="ns")
+        ).grid(row=0, column=1,padx=(5,5), pady=(5, 5), sticky="nsew")
 
         self.comm_frame = ctk.CTkFrame(self.stepper_frame)
-        self.comm_frame.grid(row=1, column=0, padx=5, pady=5, sticky="ns")
+        self.comm_frame.grid(row=1, column=0, padx=5, pady=5, sticky="nsew")
 
         ctk.CTkLabel(
             self.comm_frame,
             text="Communication",
             font=("Arial", 16, "bold"),
-        ).pack(padx=5, pady=(5, 10))
+        ).pack(padx=(5,5), pady=(5, 5))
 
         self.selected_port = tk.StringVar(value=saved_port)
 
@@ -200,7 +197,7 @@ class StepperFrame(ctk.CTkFrame):
         ctk.CTkLabel(
             self.comm_frame,
             text="Command",
-        ).pack(padx=5, pady=(10, 2))
+        ).pack(padx=(5,5), pady=(5, 5))
 
         self.command_var = tk.StringVar()
 
@@ -223,7 +220,7 @@ class StepperFrame(ctk.CTkFrame):
             width=140,
             height=100,
         )
-        self.status_box.pack(padx=5, pady=(10, 5))
+        self.status_box.pack(padx=(5,5), pady=(5, 5))
 
         self.btn_save = ctk.CTkButton(
             self.comm_frame,
@@ -249,27 +246,13 @@ class StepperFrame(ctk.CTkFrame):
 
         self.btn_pos2.pack(padx=5, pady=2)
 
-        sync_frame = ctk.CTkFrame(
-            self,
-            fg_color="transparent"
-        )
-
-        sync_frame.grid(
-            row=1,
-            column=0,
-            columnspan=2,
-            padx=5,
-            pady=5,
-            sticky="ew"
-        )
-
         self.stepper_container = ctk.CTkFrame(self.stepper_frame)
 
         self.stepper_container.grid(
             row=1,
             column=1,
-            padx=5,
-            pady=5,
+            padx=(5, 5),
+            pady=(5, 5),
             sticky="nsew",
         )
 
@@ -285,9 +268,9 @@ class StepperFrame(ctk.CTkFrame):
             channel.grid(
                 row=idx,
                 column=0,
-                padx=5,
-                pady=10,
-                sticky="n",
+                padx=(5, 5),
+                pady=(5, 5),
+                sticky="nsew",
             )
 
             self.channels[axis] = channel
@@ -385,6 +368,13 @@ class StepperFrame(ctk.CTkFrame):
     def send_command(self):
 
         cmd = self.command_var.get()
+
+        # convert µm to steps in case of MOVE cmd
+        if cmd.find("MOVE") >= 0:
+
+            cmd_move = cmd.split(" ")
+            distance = um_to_steps(int(cmd_move[2]))
+            cmd = cmd_move[0] + " " + cmd_move[1] + " " + str(distance)
 
         self.stepper.send_cmd(cmd)
 

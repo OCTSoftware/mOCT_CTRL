@@ -1,4 +1,4 @@
-from driver.calibration import steps_to_um, um_to_volts
+from driver.calibration import steps_to_um
 
 import logging
 
@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 class SyncController:
-    
+
     def __init__(self, nidaq_controllers, config):
 
         self.nidaqs = nidaq_controllers
@@ -29,7 +29,7 @@ class SyncController:
 
         logger.debug("SYNC enabled=%s", self.enabled)
 
-        
+
         if not self.enabled:
             return
 
@@ -37,7 +37,7 @@ class SyncController:
             "X": status.x.position,
             "Y": status.y.position,
         }
-        
+
         logger.debug(
             f"[SYNC] enabled={self.enabled} "
             f"X={status.x.position} "
@@ -83,10 +83,10 @@ class SyncController:
             self.nidaqs[idx].move_relative(delta_um)
 
     def set_enabled(self, enabled):
-        
+
         logger.debug(f"[SYNC CTRL] enabled={enabled}")
 
         self.enabled = enabled
-        
+
         if enabled:
             self._last_positions = None

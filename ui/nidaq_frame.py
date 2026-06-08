@@ -1,22 +1,25 @@
 import customtkinter as ctk
+
 import logging
 logger = logging.getLogger(__name__)
 
 
 class NidaqChannelFrame(ctk.CTkFrame):
-    
+
     def __init__(self, parent, ctrl, config, title):
-        
+
         super().__init__(parent)
 
         self.ctrl = ctrl
-        
+
+        self.ctrl.position_callback = self.on_position_changed
+
         self.position = getattr(ctrl, "position", 0.0)
 
         self.min_position = float(config.get("nidaq", "position", "min"))
         self.max_position = float(config.get("nidaq", "position", "max"))
         self.center_position = float(config.get("nidaq", "position", "center"))
-        
+
         large = int(config.get("nidaq", "jog", "large"))
         medium = int(config.get("nidaq", "jog", "medium"))
         small = int(config.get("nidaq", "jog", "small"))
@@ -84,7 +87,7 @@ class NidaqChannelFrame(ctk.CTkFrame):
         self.position_entry = ctk.CTkEntry(self, width=80)
 
         self.position_entry.grid(
-            row=5, column=0, columnspan=2, padx=2, pady=5, sticky="ew"
+            row=5, column=0, columnspan=2, padx=2, pady=5, sticky="nsew"
         )
 
         self.position_entry.insert(0, str(int(self.position)))
@@ -96,8 +99,25 @@ class NidaqChannelFrame(ctk.CTkFrame):
         # Center
 
         ctk.CTkButton(self, text="Center", command=self.center).grid(
-            row=6, column=0, columnspan=3, padx=2, pady=(5, 10), sticky="ew"
+            row=6, column=0, columnspan=3, padx=2, pady=(5, 10), sticky="nsew"
         )
+
+        # Does not need be here for the actual hardware settings
+
+        # self.refindex_lb = ctk.CTkLabel(
+        #     self, width=50, height=20, text="Refractive Index"
+        # )
+
+        # self.refindex_lb.grid(row=7, column=0, padx=(5, 5), pady=(5, 5))
+
+        # self.refractiveindex_tf = ctk.CTkEntry(
+        #     self, width=50, height=20, justify="center"
+        # )
+
+        # self.refractiveindex_tf.grid(row=7, column=1, padx=(5, 5), pady=(5, 5))
+
+        # self.refractiveindex_tf.insert(0, "1.33")
+        # self.refractiveindex_tf.configure(state="disabled")
 
     def update_display(self):
 
@@ -146,11 +166,16 @@ class NidaqChannelFrame(ctk.CTkFrame):
 
         self.position_label.configure(text=f"Position: {float(value):.1f}")
 
+    def on_position_changed(self, position):
+
+        self.position = position
+
+        self.after(0, self.update_display)
 
 class NidaqFrame(ctk.CTkFrame):
-    
+
     def __init__(self, parent, controllers, config):
-        
+
         super().__init__(parent)
 
         ctk.CTkLabel(self, text="NIDAQ", font=("Arial", 18, "bold")).grid(
@@ -159,5 +184,5 @@ class NidaqFrame(ctk.CTkFrame):
 
         for idx, ctrl in enumerate(controllers):
             NidaqChannelFrame(self, ctrl, config, title=f"NIDAQ {idx + 1}").grid(
-                row=1, column=idx, padx=5, pady=5, sticky="n"
+                row=1, column=idx, padx=5, pady=5, sticky="nsew"
             )

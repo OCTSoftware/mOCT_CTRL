@@ -10,7 +10,7 @@ class FooterFrame(ctk.CTkFrame):
 
         self.f4 = ctk.CTkFrame(self, fg_color="transparent")
 
-        self.f4.grid(row=3, column=1, padx=(5, 5), pady=(0, 5), sticky="sw")
+        self.f4.grid(row=3, column=1, padx=(5, 5), pady=(0, 5), sticky="nsew")
 
         self.f41 = ctk.CTkFrame(self.f4, fg_color="transparent")
 
