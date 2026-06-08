@@ -22,11 +22,11 @@ class KcubeFrame(ctk.CTkFrame):
         # original layout preserved
 
         self.kcube_f0 = ctk.CTkFrame(self, fg_color="transparent")
-        self.kcube_f0.grid(row=0, column=1, padx=(2.5, 5), pady=(5, 5), sticky="nw")
+        self.kcube_f0.grid(row=0, column=1, padx=(2.5, 5), pady=(5, 5), sticky="nseww")
 
         self.kcube_f01 = ctk.CTkFrame(self.kcube_f0, fg_color="transparent")
 
-        self.kcube_f01.grid(row=0, column=0, padx=(5, 2.5), pady=(5, 5), sticky="nw")
+        self.kcube_f01.grid(row=0, column=0, padx=(5, 2.5), pady=(5, 5), sticky="nsew")
 
         self.kcube_lb = ctk.CTkLabel(
             self.kcube_f01,
@@ -50,7 +50,7 @@ class KcubeFrame(ctk.CTkFrame):
             self.kcube_f0, border_width=1, fg_color="transparent"
         )
 
-        self.kcube_f1.grid(row=1, column=0, padx=(5, 5), pady=(5, 5), sticky="nw")
+        self.kcube_f1.grid(row=1, column=0, padx=(5, 5), pady=(5, 5), sticky="nsew")
 
         self.kcube_f2 = ctk.CTkFrame(self.kcube_f1, fg_color="transparent")
 

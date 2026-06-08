@@ -29,28 +29,27 @@ class MainWindow(ctk.CTk):
 
         if nidaq_controllers:
             NidaqFrame(self, nidaq_controllers, config).grid(
-                row=0, column=0, padx=5, pady=5, sticky="nw"
+                row=0, column=0, padx=(5,5), pady=(5, 5), sticky="nsew"
             )
 
-            # NidaqFrame(self, nidaq, config).grid(row=0, column=0, padx=5, pady=5, sticky='nw')
         if stepper:
             StepperFrame(self, stepper, config, sync_controller).grid(
-                row=0, column=1, padx=5, pady=5, sticky="nw"
+                row=0, column=1, padx=(5,5), pady=(5, 5), sticky="nsew"
             )
         if kcube:
             KcubeFrame(self, kcube, config).grid(
-                row=0, column=2, padx=5, pady=5, sticky="nw"
+                row=0, column=2, padx=(5,5), pady=(5, 5), sticky="nsew"
             )
         if nkt:
             NktFrame(self, nkt, config).grid(
-                row=0, column=3, padx=5, pady=5, sticky="nw"
+                row=0, column=3,padx=(5,5), pady=(5, 5), sticky="nsew"
             )
         if record:
             RecordingFrame(self, record).grid(
-                row=1, column=1, padx=5, pady=5, sticky="nw"
+                row=0, column=4, padx=(5,5), pady=(5, 5), sticky="nsew"
             )
 
-        FooterFrame(self).grid(row=2, column=1, padx=5, pady=5, sticky="sw")
+        FooterFrame(self).grid(row=2, column=1, padx=(5,5), pady=(5, 5), sticky="nsew")
 
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 

@@ -5,7 +5,7 @@ from controllers.oct_controller import OctController
 
 
 class RecordingFrame(ctk.CTkFrame):
-    
+
     def __init__(self, parent, config):
 
         super().__init__(parent)
@@ -31,7 +31,7 @@ class RecordingFrame(ctk.CTkFrame):
         self.recording_lb.grid(row=1, column=1, padx=(5, 5), pady=(5, 5))
 
         self.f3b = ctk.CTkFrame(self, border_width=1, fg_color="transparent")
-        self.f3b.grid(row=2, column=1, padx=(5, 5), pady=(0, 25), sticky="nw")
+        self.f3b.grid(row=2, column=1, padx=(5, 5), pady=(0, 25), sticky="nsew")
 
         # destination path
         self.dest_dir = ctk.CTkButton(

@@ -8,7 +8,7 @@ Adapted from StepperGUI.
 import queue
 import threading
 import time
-from typing import Callable, Dict, Optional
+from typing import Optional
 
 import serial
 

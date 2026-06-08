@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 class NidaqController:
-    
+
     def __init__(self,
                  config,
                  state,
@@ -13,16 +13,18 @@ class NidaqController:
                  ai_port
     ):
 
+        self.position_callback = None
+
         self.state = state
-        
+
         self.dev = None
 
         self.min_out = float(config.get("nidaq", "output", "min_voltage",  default=0.0))
 
         self.max_out = float(config.get("nidaq", "output", "max_voltage",  default=5.0))
-        
+
         self.position = float(config.get("nidaq", "position", "center", default=200))
-        
+
         self.max_position = float(config.get("nidaq", "position", "max", default=400))
 
         if config.get_bool("devices", "nidaq"):
@@ -34,16 +36,16 @@ class NidaqController:
                 self.min_out,
                 self.max_out,
             )
-            
+
             logger.debug(f"NIDAQ DEV = {self.dev}")
             logger.debug(f"[NIDAQ] AO={ao_port} AI={ai_port}")
-                        
+
             self.dev.set_position(self.position * self.max_out / self.max_position)
 
     def move_absolute(self, pos):
 
         pos = max(0, min(float(pos), self.max_position))
-        
+
         logger.debug(f"[NIDAQ_FRAME] move_absolute({pos})")
 
         self.position = pos
@@ -53,8 +55,12 @@ class NidaqController:
             voltage = pos * self.max_out / self.max_position
 
             self.dev.set_position(voltage)
-        
+
             logger.debug(f"[NIDAQ_FRAME] [move_absolute] self.dev.set_position({voltage})")
+
+        # GUI update
+        if self.position_callback:
+            self.position_callback(self.position)
 
     def move_relative(self, delta):
 
@@ -67,5 +73,5 @@ class NidaqController:
         position = self.dev.get_position()
 
         logger.debug(f"[NIDAQ CTRL] get position {position}")
-        
+
         return position

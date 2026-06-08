@@ -3,12 +3,13 @@ import customtkinter as ctk
 from utils.image_loader import load_image
 
 
-class NktFrame(ctk.CTkFrame):  
-    
-    def __init__(self, parent, config):
+class NktFrame(ctk.CTkFrame):
+
+    def __init__(self, parent, ctrl, config):
 
         super().__init__(parent)
 
+        self.ctrl = ctrl
         self.config = config
 
         self.nkt_power = 100
@@ -19,11 +20,11 @@ class NktFrame(ctk.CTkFrame):
 
         self.nkt_f0 = ctk.CTkFrame(self, fg_color="transparent")
 
-        self.nkt_f0.grid(row=0, column=2, padx=(2.5, 5), pady=(5, 5), sticky="nw")
+        self.nkt_f0.grid(row=0, column=2, padx=(2.5, 5), pady=(5, 5), sticky="nsew")
 
         self.nkt_f01 = ctk.CTkFrame(self.nkt_f0, fg_color="transparent")
 
-        self.nkt_f01.grid(row=0, column=0, padx=(5, 2.5), pady=(5, 5), sticky="nw")
+        self.nkt_f01.grid(row=0, column=0, padx=(5, 2.5), pady=(5, 5), sticky="nsew")
 
         self.nkt_lb = ctk.CTkLabel(
             self.nkt_f01,
@@ -45,7 +46,7 @@ class NktFrame(ctk.CTkFrame):
 
         self.nkt_f1 = ctk.CTkFrame(self.nkt_f0, border_width=1, fg_color="transparent")
 
-        self.nkt_f1.grid(row=1, column=0, padx=(5, 5), pady=(5, 5), sticky="nw")
+        self.nkt_f1.grid(row=1, column=0, padx=(5, 5), pady=(5, 5), sticky="nsew")
 
         # buttons
 
