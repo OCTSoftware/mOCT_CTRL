@@ -31,6 +31,9 @@ class ConfigManager:
 
     def set(self, *keys, value):
 
+        if not keys:
+            raise ValueError("No keys provided")
+
         data = self.data
 
         for key in keys[:-1]:

@@ -12,8 +12,8 @@ class DummyConfig:
         self.values = values or {}
         self.bools = bools or {}
 
-    def get(self, key, default=None):
-        return self.values.get(key, default)
+    def get(self, section, key=None):
+        return self.values.get((section, key))
 
     def get_bool(self, key):
         return self.bools.get(key, False)
@@ -48,6 +48,10 @@ def dummy_device():
 @pytest.fixture
 def dummy_config():
     return DummyConfig(
-        values={"kcube_serial_number": "12345678"},
-        bools={"using_kcube": True},
+        values={
+            ("kcube", "serial_number"): "12345678",
+        },
+        bools={
+            "using_kcube": True,
+        },
     )

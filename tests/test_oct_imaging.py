@@ -38,8 +38,6 @@ def test_worker_completes(tmp_path):
 
 
 def test_worker_exception_sets_last_error(mocker):
-    from driver.oct_imaging import OctImaging
-
     octi = OctImaging()
 
     mocker.patch(
@@ -49,7 +47,8 @@ def test_worker_exception_sets_last_error(mocker):
 
     octi.start_recording("tmp", 1, 0, 1)
 
-    octi.worker.join(timeout=2)
+    if octi.worker is not None:
+        octi.worker.join(timeout=2)
 
     assert isinstance(octi.last_error, RuntimeError)
     assert str(octi.last_error) == "simulated acquisition failure"

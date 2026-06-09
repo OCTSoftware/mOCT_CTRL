@@ -30,7 +30,7 @@ def create_app():
 
     config = ConfigManager(
         Path(__file__).resolve().parent
-        / "resources"
+        / "config"
         / "config.json"
     )
 
@@ -39,7 +39,7 @@ def create_app():
     nidaq_controllers = []
 
     logger.debug(f"[APP] device {config.get('nidaq', 'device')}")
- 
+
     for channel in config.get("nidaq", "channels"):
 
         nidaq_controllers.append(
