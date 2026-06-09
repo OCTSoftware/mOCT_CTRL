@@ -114,7 +114,7 @@ class PluginManager:
 
             return
 
-        logger.debug(f"[PLUGINMANAGER] f"Loading {hw_name}"")
+        logger.debug(f"[PLUGINMANAGER] Loading {hw_name}")
         status, mod = self.load_plugin(fname_plugin, hw_name, import_names)
 
         if status == 0:

@@ -187,7 +187,7 @@ pip install -r requirements.txt
 Application settings are stored in:
 
 ```text
-resources/config.json
+config/config.json
 ```
 
 Typical configuration sections include:
@@ -302,7 +302,3 @@ MIT License
 ## Author
 
 Developed for laboratory automation, motion control, and OCT system integration.
-
-
-
-

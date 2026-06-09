@@ -1,4 +1,5 @@
 import pytest
+
 from controllers.kcube_controller import KcubeController
 
 
@@ -10,31 +11,31 @@ def test_init_valid_serial(mocker, dummy_config, dummy_state, dummy_device):
 
     ctrl = KcubeController(dummy_config, dummy_state)
 
-    assert ctrl.dev is dummy_device
     assert ctrl.serial_number == "12345678"
+    assert ctrl.dev is dummy_device
 
 
 def test_init_invalid_serial(mocker, dummy_state):
-    cfg = type(
-        "Cfg",
-        (),
-        {
-            "get": lambda self, k: "abc",
-            "get_bool": lambda self, k: True,
-        },
-    )()
+    class Cfg:
+        def get(self, section, key):
+            return "abc"
+
+        def get_bool(self, key):
+            return True
 
     patched = mocker.patch("controllers.kcube_controller.KcubeHandle")
 
-    ctrl = KcubeController(cfg, dummy_state)
+    ctrl = KcubeController(Cfg(), dummy_state)
 
+    assert ctrl.serial_number is None
     assert ctrl.dev is None
     patched.assert_not_called()
 
 
 def test_init_hw_failure(mocker, dummy_config, dummy_state):
     mocker.patch(
-        "controllers.kcube_controller.KcubeHandle", side_effect=RuntimeError("USB fail")
+        "controllers.kcube_controller.KcubeHandle",
+        side_effect=RuntimeError("USB fail"),
     )
 
     ctrl = KcubeController(dummy_config, dummy_state)
@@ -49,6 +50,7 @@ def test_move_absolute_valid(mocker, dummy_config, dummy_state, dummy_device):
     )
 
     ctrl = KcubeController(dummy_config, dummy_state)
+
     ctrl.move_absolute(25)
 
     assert dummy_state.kcube_position == 25
@@ -74,6 +76,22 @@ def test_move_absolute_clamps(mocker, dummy_config, dummy_state, dummy_device):
     )
 
     ctrl = KcubeController(dummy_config, dummy_state)
+
     ctrl.move_absolute(150)
 
     assert dummy_state.kcube_position == 100
+    assert dummy_device.position == 100
+
+
+def test_home(mocker, dummy_config, dummy_state, dummy_device):
+    mocker.patch(
+        "controllers.kcube_controller.KcubeHandle",
+        return_value=dummy_device,
+    )
+
+    ctrl = KcubeController(dummy_config, dummy_state)
+
+    ctrl.home()
+
+    assert dummy_state.kcube_position == 0
+    assert dummy_device.homed is True

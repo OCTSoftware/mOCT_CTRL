@@ -65,8 +65,8 @@ class OctImaging:
 
             logger.debug("[OCT_IMAGING] Recording finished.")
 
-        except Exception as exc:
-            self.last_error = exc
+        except Exception as e:
+            self.last_error = e
             logger.debug(f"[OCT_IMAGING] OCT recording failed -> {e}")
 
         finally:
