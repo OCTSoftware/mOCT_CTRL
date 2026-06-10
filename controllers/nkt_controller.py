@@ -4,7 +4,9 @@ logger = logging.getLogger(__name__)
 
 
 class NktController:
+
     def __init__(self, config, state):
+
         self.state = state
         self.state.nkt_power = 100
 
@@ -12,7 +14,7 @@ class NktController:
         self.app = None
         self.watchdog_job = None
 
-        if config.get_bool("using_nkt"):
+        if config.get_bool("nkt"):
             try:
                 self.dev = NktHandle(config.get("nkt", "device"))
             except Exception as e:

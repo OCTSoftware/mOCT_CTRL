@@ -20,7 +20,7 @@ class KcubeController:
         except (TypeError, ValueError):
             self.serial_number = None
 
-        if config.get_bool("using_kcube") and self.serial_number is not None:
+        if config.get_bool("kcube") and self.serial_number is not None:
             try:
                 self.dev = KcubeHandle(self.serial_number) if KcubeHandle else None
             except Exception as e:

@@ -126,8 +126,6 @@ class StepperFrame(ctk.CTkFrame):
             f"[StepperFrame] [__init__] Callback={self.stepper.status_callback}"
         )
 
-        self.configure(fg_color="#2b2b2b")
-
         self.stepper_frame = ctk.CTkFrame(self, fg_color="transparent")
         self.stepper_frame.grid(row=0, column=0, padx=(5,5), pady=(5, 5), sticky="nsew")
 

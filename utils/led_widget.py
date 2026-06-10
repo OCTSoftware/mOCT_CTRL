@@ -18,7 +18,6 @@ class LEDWidget(ctk.CTkFrame):
             width=self.width,
             height=self.height,
             highlightthickness=0,
-            bg="gray92",
         )
         self.canvas.pack()
 
