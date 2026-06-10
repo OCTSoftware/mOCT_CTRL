@@ -56,8 +56,11 @@ def create_app():
     stepper = StepperDriver(config, state) if config.get_bool("devices", "stepper") else None
     record = RecordManager(config, state) if config.get_bool("devices", "record") else None
 
-    sync_controller = SyncController(nidaq_controllers, config)
-    stepper.sync_controller = sync_controller
+    if config.get_bool("devices", "kcube") and config.get_bool("devices", "stepper"):
+        sync_controller = SyncController(nidaq_controllers, config)
+        stepper.sync_controller = sync_controller
+    else:
+        sync_controller = None
 
     shutdown_done = False
 

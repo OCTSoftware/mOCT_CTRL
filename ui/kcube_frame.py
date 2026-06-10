@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class KcubeFrame(ctk.CTkFrame):
+
     def __init__(self, parent, ctrl, config):
 
         super().__init__(parent)
