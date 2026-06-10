@@ -1,3 +1,8 @@
 __pycache__/
 output/
 *.bkp
+/doc/GIT Best Practice README.pdf
+/config/config.txt
+/htmlcov
+/.coverage
+/config/config.json

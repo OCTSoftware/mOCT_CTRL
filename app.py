@@ -1,0 +1,112 @@
+import atexit
+import sys
+import traceback
+
+import logging
+
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+)
+
+from pathlib import Path
+
+from core.config_manager import ConfigManager
+from core.app_state import AppState
+
+from controllers.nidaq_controller import NidaqController
+from controllers.kcube_controller import KcubeController
+from controllers.nkt_controller import NktController
+from controllers.sync_controller import SyncController
+from controllers.stepper_controller import StepperDriver
+from controllers.record_manager import RecordManager
+
+from ui.main_window import MainWindow
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def create_app():
+
+    config = ConfigManager(
+        Path(__file__).resolve().parent
+        / "config"
+        / "config.json"
+    )
+
+    state = AppState()
+
+    nidaq_controllers = []
+
+    logger.debug(f"[APP] device {config.get('nidaq', 'device')}")
+
+    for channel in config.get("nidaq", "channels"):
+
+        nidaq_controllers.append(
+            NidaqController(
+                config=config,
+                state=state,
+                ao_port=channel["ao"],
+                ai_port=channel["ai"],
+            )
+        )
+
+    kcube = KcubeController(config, state) if config.get_bool("devices", "kcube") else None
+    nkt = NktController(config, state) if config.get_bool("devices", "nkt") else None
+    stepper = StepperDriver(config, state) if config.get_bool("devices", "stepper") else None
+    record = RecordManager(config, state) if config.get_bool("devices", "record") else None
+
+    if config.get_bool("devices", "kcube") and config.get_bool("devices", "stepper"):
+        sync_controller = SyncController(nidaq_controllers, config)
+        stepper.sync_controller = sync_controller
+    else:
+        sync_controller = None
+
+    shutdown_done = False
+
+    def safe_shutdown():
+
+        nonlocal shutdown_done
+
+        if shutdown_done:
+            return
+
+        shutdown_done = True
+
+        if nkt is not None and getattr(nkt, "dev", None):
+            logger.debug("[APP] Emergency shutdown")
+            nkt.emergency_shutdown()
+
+    atexit.register(safe_shutdown)
+
+    def handle_exception(exc_type, exc_value, exc_traceback):
+
+        traceback.print_exception(exc_type, exc_value, exc_traceback)
+
+        safe_shutdown()
+
+    sys.excepthook = handle_exception
+
+    app = MainWindow(
+        config,
+        state,
+        nidaq_controllers,
+        kcube,
+        nkt,
+        stepper,
+        sync_controller,
+        record,
+    )
+
+    if nkt is not None:
+        nkt.attach_app(app)
+
+    def on_close():
+
+        safe_shutdown()
+
+        app.destroy()
+
+    app.protocol("WM_DELETE_WINDOW", on_close)
+
+    return app

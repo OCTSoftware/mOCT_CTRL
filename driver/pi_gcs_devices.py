@@ -1,4 +1,4 @@
-'''
+"""
 pi_gcs_devices.py
 
 from pi_gcs_devices import PIGCSHandle as pi_gcs
@@ -10,90 +10,81 @@ pi_gcs.move_rel(pi_gcs,1,1)
 pi_gcs.move_fnl(pi_gcs)
 pi_gcs.disconnect(pi_gcs)
 
-'''
+"""
+
 from time import sleep
 from typing import NamedTuple
 from pipython import GCSDevice, pitools
 from pipython import GCSError, gcserror
+import logging
+logger = logging.getLogger(__name__)
+
 
 class StageStatus(NamedTuple):
-    ''' Return values from moving def's '''
+    """Return values from moving def's"""
 
     status: int
     position: float
 
 
 class PIGCSHandle:
-    ''' PIGCSHandle '''
+    """PIGCSHandle"""
 
-    # --------------------------------------------------------------------------
     def __init__(self, comport: str) -> None:
-        ''' __init__'''
+        """__init__"""
 
         self.pidevice = None
-        self.axes = ''
-        print('\n')
+        self.axes = ""
+        logger.debug("[PI_GCS_DEVICES]")
 
-    # --------------------------------------------------------------------------
     def connect(self, comport: str) -> int:
-        ''' Connect device '''
+        """Connect device"""
 
         status = 0
-        self.pidevice = GCSDevice('C-863.11')
+        self.pidevice = GCSDevice("C-863.11")
 
         try:
             port = int(comport)
-            print(f'Connecting to COM{port} ...')
+            logger.debug(f"[PI_GCS_DEVICES] Connecting to COM{port}")
             self.pidevice.OpenRS232DaisyChain(comport=port, baudrate=115200)
             dcid = self.pidevice.dcid
             self.pidevice.ConnectDaisyChainDevice(1, dcid)
 
             idn = self.pidevice.qIDN()
-            print(f'Device {idn} connected ...')
+            logger.debug(f"[PI_GCS_DEVICES] Device {idn} connected")
 
-            self.axes = ['1']                           # Setup  axis 1
-            pitools.enableaxes(self.pidevice, '1')      # Enable axis 1
-            pitools.setservo(self.pidevice, '1', True)  # Turn servo ON for axis 1
+            self.axes = ["1"]  # Setup  axis 1
+            pitools.enableaxes(self.pidevice, "1")  # Enable axis 1
+            pitools.setservo(self.pidevice, "1", True)  # Turn servo ON for axis 1
 
-            print('Axes 1 connected ...')
+            logger.debug("[PI_GCS_DEVICES] Axes 1 connected")
             status = 1
 
         except GCSError as exc:
-
-            print(f"COM9 GCS failed: {exc}")
+            logger.debug(f"[PI_GCS_DEVICES] COM9 GCS failed -> {e}")
             status = -1
             return status
 
         except OSError as exc:
-            print(f"COM9 port failed: {exc}")
+            logger.debug(f"[PI_GCS_DEVICES] COM9 port failed -> {e}")
             status = -2
             return status
-
-        # Go to negative limit
-        # self.pidevice.gcscommands.FNL(self.axes)
-        # while not all(pitools.ontarget(self.pidevice, self.axes).values()):
-        #     sleep(0.05)
-        # print('Servo reached negative limit')
-
         status = 2
 
         return status
 
-    # --------------------------------------------------------------------------
     def move_fnl(self) -> None:
-        ''' Go to negative limit '''
+        """Go to negative limit"""
 
         self.pidevice.gcscommands.FNL(self.axes)
         while not all(pitools.ontarget(self.pidevice, self.axes).values()):
             sleep(0.05)
-        print('Servo reached negative limit')
+        logger.debug("[PI_GCS_DEVICES] Servo reached negative limit")
 
-
-    # --------------------------------------------------------------------------
     def move_abs(self, absolut_position) -> StageStatus[int, float]:
-        '''
+        """
         Move to absolute position
-        '''
+        """
         status = 0
         try:
             axis = self.axes[0]  # '1'
@@ -106,7 +97,7 @@ class PIGCSHandle:
 
             current_pos = self.pidevice.gcscommands.qPOS(self.axes)
             position = next(iter(current_pos.values()))
-            #print(f'position = {position}')
+            # print(f'position = {position}')
 
             status = 1
 
@@ -123,11 +114,10 @@ class PIGCSHandle:
 
         return status, position
 
-    # --------------------------------------------------------------------------
     def move_rel(self, relative_position) -> StageStatus[int, float]:
-        '''
+        """
         Move a relative distance
-        '''
+        """
         status = 0
         try:
             axis = self.axes[0]  # '1'
@@ -139,12 +129,11 @@ class PIGCSHandle:
 
             current_pos = self.pidevice.gcscommands.qPOS(self.axes)
             position = next(iter(current_pos.values()))
-            #print(f'position = {position}')
+            # print(f'position = {position}')
 
             status = 1
 
         except GCSError as exc:
-
             if exc == gcserror.E_1024_PI_MOTION_ERROR:
                 # Clear controller
                 self.pidevice.gcscommands.CLR()
@@ -156,19 +145,17 @@ class PIGCSHandle:
 
         return StageStatus(status, position)
 
-    # --------------------------------------------------------------------------
     def get_pos(self) -> float:
-        '''
+        """
         Query the position
-        '''
+        """
         current_pos = self.pidevice.gcscommands.qPOS(self.axes)
         position = next(iter(current_pos.values()))
         return position
 
-    # --------------------------------------------------------------------------
     def disconnect(self) -> None:
-        '''
+        """
         Disconnect device
-        '''
+        """
         self.pidevice.gcscommands.CloseConnection()
-        print('Device disconnected ...')
+        logger.debug("[PI_GCS_DEVICES] Device disconnected")
