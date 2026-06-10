@@ -4,5 +4,9 @@ output/
 /doc/GIT Best Practice README.pdf
 /config/config.txt
 /htmlcov
+<<<<<<< HEAD
 /.coverage
 /config/config.json
+=======
+/.coverage
+>>>>>>> bugfix/v2.0.2
