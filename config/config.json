@@ -1,9 +1,9 @@
 {
     "devices": {
-        "nkt": true,
-        "kcube": true,
-        "nidaq": false,
-        "stepper": false,
+        "nkt": false,
+        "kcube": false,
+        "nidaq": true,
+        "stepper": true,
         "record": false
     },
     "nidaq": {
@@ -22,6 +22,10 @@
             {
                 "ao": "ao0",
                 "ai": "ai0"
+            },
+            {
+                "ao": "ao1",
+                "ai": "ai1"
             }
         ],
         "jog": {
@@ -31,7 +35,7 @@
         }
     },
     "kcube": {
-        "serial_number": "28253059",
+        "serial_number": "28252775",
         "objectives": {
             "home": 10.0,
             "05x16": 22.43,
@@ -42,10 +46,10 @@
         "last_selected": "10x03"
     },
     "nkt": {
-        "device": "COM3"
+        "device": "COM2"
     },
     "stepper": {
-        "port": "COM4",
+        "port": "COM3",
         "baudrate": 115200,
         "position": {
             "position_1": {
@@ -64,6 +68,10 @@
             {
                 "axis": "X",
                 "nidaq": 1
+            },
+            {
+                "axis": "Y",
+                "nidaq": 2
             }
         ],
         "offset": 0.0
